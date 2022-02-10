@@ -1,34 +1,44 @@
 <template>
   <div>
-    <el-container class="bg-white dark:bg-slate-900">
+    <el-container class="bg-white dark:bg-gray-800 transition duration-300 ease-linear">
       <el-aside>
         <el-menu
           router
           default-active="/Guidance"
-          class="el-menu-vertical"
+          class="bg-white dark:bg-gray-700 transition duration-300 ease-linear"
           :collapse="true"
         >
-          <el-menu-item index="/Guidance">
-            <el-icon><Location /></el-icon>
+          <el-menu-item index="/Guidance" class="dark:hover:bg-gray-500">
+            <div class="dark:text-white">
+              <el-icon><Location /></el-icon>
+            </div>
             <template #title>导览</template>
           </el-menu-item>
-          <el-menu-item index="/Apps">
-            <el-icon><IconMenu /></el-icon>
+          <el-menu-item index="/Apps" class="dark:hover:bg-gray-500">
+            <div class="dark:text-white">
+              <el-icon><IconMenu /></el-icon>
+            </div>
             <template #title>模型介绍</template>
           </el-menu-item>
           <el-sub-menu index="/ModelSelect">
-            <template #title>
-              <el-icon><Box /></el-icon>
+            <template #title class="dark:hover:bg-gray-500">
+              <div class="text-black dark:text-white">
+                <el-icon><Box /></el-icon>
+              </div>
               <span>模型列表</span>
             </template>
-            <el-menu-item-group>
-              <template #title><span>可选模型</span></template>
-              <el-menu-item index="1-1">Model one</el-menu-item>
-              <el-menu-item index="1-2">Model two</el-menu-item>
-            </el-menu-item-group>
+            <div>
+              <el-menu-item-group class="dark:text-white">
+                <template #title><span>可选模型</span></template>
+                <el-menu-item index="1-1">Model one</el-menu-item>
+                <el-menu-item index="1-2">Model two</el-menu-item>
+              </el-menu-item-group>
+            </div>
           </el-sub-menu>
-          <el-menu-item index="/Setting">
-            <el-icon><Setting /></el-icon>
+          <el-menu-item index="/Setting" class="dark:hover:bg-gray-500">
+            <div class="dark:text-white">
+              <el-icon><Setting /></el-icon>
+            </div>
             <template #title>设置</template>
           </el-menu-item>
           <el-switch

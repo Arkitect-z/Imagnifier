@@ -18,13 +18,14 @@ const routes: RouteRecordRaw[] = [
                 path: '/Apps',
                 component: Apps,
             },
+            {
+                path: '/:pathMatch(.*)*',
+                name: '404',
+                component: NonePage,
+            }
         ]
     },
-    {
-        path: '/:pathMatch(.*)*',
-        name: '404',
-        component: NonePage
-    }
+    
 ]
 
 

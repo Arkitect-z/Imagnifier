@@ -1,5 +1,5 @@
-<template class="dark">
-    <div class="bg-white dark:bg-black">
-        <h1>yes!!!</h1>
+<template>
+    <div>
+        <h1 class="text-gray-900 dark:text-white text-3xl font-bold underline">yes!!!</h1>
     </div>
 </template>
