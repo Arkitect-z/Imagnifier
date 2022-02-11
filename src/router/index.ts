@@ -3,6 +3,9 @@ import NavMenu from '../views/NavMenu.vue'
 import NonePage from '../views/404.vue'
 import Guidance from '../views/Guidance.vue'
 import Apps from '../views/Apps.vue'
+import Setting from '../views/Setting.vue'
+import Waifu2x from '../views/Waifu2x-View.vue'
+import RealESRGAN from '../views/Real-ESRGAN-View.vue'
 
 const routes: RouteRecordRaw[] = [
     {
@@ -17,6 +20,18 @@ const routes: RouteRecordRaw[] = [
             {
                 path: '/Apps',
                 component: Apps,
+            },
+            {
+                path: '/Setting',
+                component: Setting,
+            },
+            {
+                path: '/Waifu2x',
+                component: Waifu2x,
+            },
+            {
+                path: '/Real-ESRGAN',
+                component: RealESRGAN,
             },
             {
                 path: '/:pathMatch(.*)*',

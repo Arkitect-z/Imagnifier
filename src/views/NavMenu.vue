@@ -30,8 +30,8 @@
             <div>
               <el-menu-item-group class="dark:text-white">
                 <template #title><span>可选模型</span></template>
-                <el-menu-item index="1-1">Model one</el-menu-item>
-                <el-menu-item index="1-2">Model two</el-menu-item>
+                <el-menu-item index="/Waifu2x">Waifu2x</el-menu-item>
+                <el-menu-item index="/Real-ESRGAN">Real-ESRGAN</el-menu-item>
               </el-menu-item-group>
             </div>
           </el-sub-menu>
