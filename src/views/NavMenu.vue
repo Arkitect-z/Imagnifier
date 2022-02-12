@@ -1,11 +1,20 @@
 <template>
   <div>
-    <el-container class="bg-white dark:bg-gray-800 transition duration-300 ease-linear">
+    <el-container
+      class="
+        h-screen
+        bg-white
+        dark:bg-gray-800 dark:border-gray-700
+        transition
+        duration-300
+        ease-linear
+      "
+    >
       <el-aside>
         <el-menu
           router
           default-active="/Guidance"
-          class="bg-white dark:bg-gray-700 transition duration-300 ease-linear"
+          class="dark:bg-gray-700 transition duration-300 ease-linear"
           :collapse="true"
         >
           <el-menu-item index="/Guidance" class="dark:hover:bg-gray-500">
@@ -20,18 +29,26 @@
             </div>
             <template #title>模型介绍</template>
           </el-menu-item>
-          <el-sub-menu index="/ModelSelect">
-            <template #title class="dark:hover:bg-gray-500">
-              <div class="text-black dark:text-white">
+          <el-sub-menu index="/ModelSelect" class="dark:hover:bg-gray-500">
+            <template #title>
+              <div class="dark:text-white">
                 <el-icon><Box /></el-icon>
               </div>
               <span>模型列表</span>
             </template>
             <div>
-              <el-menu-item-group class="dark:text-white">
+              <el-menu-item-group class="dark:bg-gray-700">
                 <template #title><span>可选模型</span></template>
-                <el-menu-item index="/Waifu2x">Waifu2x</el-menu-item>
-                <el-menu-item index="/Real-ESRGAN">Real-ESRGAN</el-menu-item>
+                <el-menu-item
+                  index="/Waifu2x"
+                  class="dark:text-white dark:hover:bg-gray-500"
+                  >Waifu2x</el-menu-item
+                >
+                <el-menu-item
+                  index="/Real-ESRGAN"
+                  class="dark:text-white dark:hover:bg-gray-500"
+                  >Real-ESRGAN</el-menu-item
+                >
               </el-menu-item-group>
             </div>
           </el-sub-menu>
@@ -85,4 +102,10 @@ const darkMode = () => {
 </script>
 
 <style>
+.el-aside {
+  --el-aside-width: auto;
+}
+.el-container {
+  height: 200%;
+}
 </style>
