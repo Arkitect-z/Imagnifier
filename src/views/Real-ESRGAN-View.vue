@@ -1,11 +1,11 @@
 <template>
-  <div>
+  <div class="box-content p-10">
     <h1 class="text-gray-900 dark:text-white text-3xl font-bold">
       Real-ESRGAN!!!
     </h1>
     <el-upload
       drag
-      class="mx-52"
+      class="my-14 mx-72"
       multiple
       action="#"
       :http-request="getUrl"
@@ -18,7 +18,7 @@
       <div class="dark:bg-gray-500">
         <el-icon class="el-icon--upload"><upload-filled /></el-icon>
         <div class="el-upload__text dark:text-white">
-          Drop file here or <em class="dark:text-white">click to upload</em>
+          拖动文件到此 或 <em>点击来上传</em>
         </div>
       </div>
     </el-upload>
@@ -67,4 +67,20 @@ const saveImage = (fileList: UploadFile[]) => {
 </script>
 
 <style>
+.dark .el-upload-dragger {
+  --tw-bg-opacity: 1;
+  background-color: rgb(107 114 128 / var(--tw-bg-opacity));
+}
+.dark .el-upload-dragger .el-upload__text em {
+  color: #93c5fd;
+}
+.dark .el-upload-list--picture .el-upload-list__item {
+  background-color: #4B5563;
+}
+.dark .el-upload-list__item-name {
+  color: #ffffff;
+}
+.dark .el-upload-list__item .el-icon--close {
+  color: #ffffff;
+}
 </style>

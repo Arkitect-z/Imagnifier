@@ -1,20 +1,20 @@
 <template>
-  <div>
+  <div class="h-screen">
     <el-container
-      class="
-        h-screen
-        bg-white
-        dark:bg-gray-800 dark:border-gray-700
-        transition
-        duration-300
-        ease-linear
-      "
+      class="bg-white dark:bg-gray-800 transition duration-300 ease-linear"
     >
       <el-aside>
         <el-menu
           router
           default-active="/Guidance"
-          class="dark:bg-gray-700 transition duration-300 ease-linear"
+          class="
+            h-screen
+            py-10
+            dark:bg-gray-700 dark:border-gray-700
+            transition
+            duration-300
+            ease-linear
+          "
           :collapse="true"
         >
           <el-menu-item index="/Guidance" class="dark:hover:bg-gray-500">
@@ -69,7 +69,7 @@
           </el-switch>
         </el-menu>
       </el-aside>
-      <el-main>
+      <el-main class="shadow-inner dark:shadow-inner">
         <transition name="el-fade-in-linear">
           <router-view />
         </transition>
@@ -107,5 +107,18 @@ const darkMode = () => {
 }
 .el-container {
   height: 200%;
+}
+.dark .el-menu {
+  --tw-bg-opacity: 1;
+  --el-menu-bg-color: rgb(55 65 81 / var(--tw-bg-opacity));
+}
+.dark .el-popper.is-light {
+  border: 0px;
+  --tw-bg-opacity: 1;
+  background: rgb(55 65 81 / var(--tw-bg-opacity));
+}
+.dark .el-sub-menu__title:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgba(107, 114, 128, var(--tw-bg-opacity));
 }
 </style>
