@@ -9,6 +9,7 @@
   "dependencies": {
     "element-plus": "^1.2.0-beta.1",
     "vue": "^3.2.20",
+    "vue-ele-upload-image": "^2.0.12",
     "vue-router": "^4.0.12",
     "vuex": "^4.0.2"
   },

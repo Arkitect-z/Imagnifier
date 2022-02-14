@@ -70,9 +70,11 @@
         </el-menu>
       </el-aside>
       <el-main class="shadow-inner dark:shadow-inner">
-        <transition name="el-fade-in-linear">
-          <router-view />
-        </transition>
+        <router-view v-slot="{ Component }">
+          <transition name="el-fade-in-linear">
+            <component :is="Component" />
+          </transition>
+        </router-view>
       </el-main>
     </el-container>
   </div>
@@ -104,9 +106,6 @@ const darkMode = () => {
 <style>
 .el-aside {
   --el-aside-width: auto;
-}
-.el-container {
-  height: 200%;
 }
 .dark .el-menu {
   --tw-bg-opacity: 1;
