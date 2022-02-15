@@ -1,5 +1,5 @@
 # Imagnifier
-> 一个集成 Vue 3 + Vite 2 + Vue-Router 4 + Vuex 4 + TailWindCss + TypeScript + ESLint 等框架与组件的动漫图片放大器的前端实现
+> 一个集成 Vue 3 + Vite 2 + Vue-Router 4 + Vuex 4 + TailWindCss + TypeScript + ESLint 等框架与组件的动漫图片放大器的前端实现，与后端python实现
 
 ## 技术栈
 
