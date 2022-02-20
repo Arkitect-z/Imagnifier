@@ -70,11 +70,11 @@
         </el-menu>
       </el-aside>
       <el-main class="shadow-inner dark:shadow-inner">
-        <router-view v-slot="{ Component }">
-          <transition name="el-fade-in-linear">
-            <component :is="Component" />
-          </transition>
-        </router-view>
+        <transition name="el-fade-in-linear">
+          <keep-alive>
+            <router-view />
+          </keep-alive>
+        </transition>
       </el-main>
     </el-container>
   </div>
