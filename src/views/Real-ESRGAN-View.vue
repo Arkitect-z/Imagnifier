@@ -1,10 +1,9 @@
 <template>
-  <div class="box-content p-10">
+  <div class="box-content p-12">
     <h1 class="text-gray-900 dark:text-white text-3xl font-bold">
       Real-ESRGAN!!!
     </h1>
     <el-scrollbar
-      height="200px"
       class="my-14 dark:bg-gray-700 mx-18 p-6 shadow-lg rounded-2xl border-opacity-60"
     >
       <el-upload
@@ -41,6 +40,7 @@
     >
       <span>需要上传图片</span>
     </el-progress>
+     <p v-for="item in 20" :key="item" class="scrollbar-demo-item">{{ item }}</p>
   </div>
 </template>
 <script lang="ts" setup>
@@ -71,6 +71,7 @@ const uploadSuccessResultMassage = (
   fileList: UploadFile[]
 ) => {
   ElMessage({
+    duration:1200,
     showClose: true,
     message: "上传成功!",
     type: "success",
@@ -84,6 +85,7 @@ const uploadErrorResultMassage = (
   fileList: UploadFile[]
 ) => {
   ElMessage({
+    duration:1200,
     showClose: true,
     message: "上传失败!",
     type: "error",

@@ -1,6 +1,7 @@
 <template>
   <div class="h-screen">
     <el-container
+      style="height: 100%"
       class="bg-white dark:bg-gray-800 transition duration-300 ease-linear"
     >
       <el-aside>
@@ -106,6 +107,9 @@ const darkMode = () => {
 </script>
 
 <style>
+.el-main {
+    --el-main-padding: 0px;
+}
 .el-aside {
   --el-aside-width: auto;
 }
