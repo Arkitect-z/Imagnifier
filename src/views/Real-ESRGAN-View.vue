@@ -8,7 +8,7 @@
     >
       <el-upload
         multiple
-        action="https://jsonplaceholder.typicode.com/posts/"
+        action="http://127.0.0.1:5000/action"
         list-type="picture-card"
         :on-preview="handlePictureCardPreview"
         :on-remove="handleRemove"
@@ -90,10 +90,6 @@ const uploadErrorResultMassage = (
     message: "上传失败!",
     type: "error",
   });
-};
-// 覆盖上传图片默认的 xhr 行为
-const getUrl = (fileList: UploadFile[]) => {
-  console.log(fileList);
 };
 const saveImage = () => {};
 // 提交表单
