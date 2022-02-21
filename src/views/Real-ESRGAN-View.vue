@@ -3,16 +3,22 @@
     <h1 class="text-gray-900 dark:text-white text-3xl font-bold">
       Real-ESRGAN!!!
     </h1>
-    <el-upload
-      class="my-14 mx-72"
-      multiple
-      action="https://jsonplaceholder.typicode.com/posts/"
-      list-type="picture-card"
-      :on-preview="handlePictureCardPreview"
-      :on-remove="handleRemove"
+    <el-scrollbar
+      height="200px"
+      class="my-14 dark:bg-gray-700 mx-18 p-6 shadow-lg rounded-2xl border-opacity-60"
     >
-      <el-icon><plus /></el-icon>
-    </el-upload>
+      <el-upload
+        multiple
+        action="https://jsonplaceholder.typicode.com/posts/"
+        list-type="picture-card"
+        :on-preview="handlePictureCardPreview"
+        :on-remove="handleRemove"
+        :on-success="uploadSuccessResultMassage"
+        :on-error="uploadErrorResultMassage"
+      >
+        <el-icon><plus /></el-icon>
+      </el-upload>
+    </el-scrollbar>
     <el-dialog v-model="dialogVisible">
       <el-image width="100%" :src="dialogImageUrl" alt="" />
     </el-dialog>
@@ -38,9 +44,9 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, reactive } from "vue";
+import { ref } from "vue";
 import { ElMessage } from "element-plus";
-import { Plus, UploadFilled } from "@element-plus/icons-vue";
+import { Plus } from "@element-plus/icons-vue";
 import type { UploadFile } from "element-plus/es/components/upload/src/upload.type";
 
 const dialogImageUrl = ref("");
@@ -65,6 +71,7 @@ const uploadSuccessResultMassage = (
   fileList: UploadFile[]
 ) => {
   ElMessage({
+    showClose: true,
     message: "上传成功!",
     type: "success",
   });
@@ -76,36 +83,17 @@ const uploadErrorResultMassage = (
   file: UploadFile,
   fileList: UploadFile[]
 ) => {
-  ElMessage.error("上传失败!");
   ElMessage({
-    message: "上传成功!",
-    type: "success",
-    appendTo: "el-main el-upload",
+    showClose: true,
+    message: "上传失败!",
+    type: "error",
   });
-  console.log(err);
 };
 // 覆盖上传图片默认的 xhr 行为
 const getUrl = (fileList: UploadFile[]) => {
   console.log(fileList);
 };
 const saveImage = () => {};
-// 模型标签页
-const activeName = ref("first");
-// 标签页点击监听
-const handleClick = (tab: string, event: Event) => {
-  console.log(tab, event);
-};
-// 表单内容
-const form = reactive({
-  name: "",
-  region: "",
-  date1: "",
-  date2: "",
-  delivery: false,
-  type: [],
-  resource: "",
-  desc: "",
-});
 // 提交表单
 const onSubmit = () => {
   console.log("submit!");

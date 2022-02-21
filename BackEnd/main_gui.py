@@ -30,7 +30,7 @@ class MainWindow(QMainWindow):
     def initUI(self):
         # 将窗口设置为动图大小
         self.resize(1440, 900)
-        self.browser.setZoomFactor(self.browser.zoomFactor() + 0.7)
+        self.browser.setZoomFactor(self.browser.zoomFactor() + 0.3)
         # 获取相对路径
         url = "http://localhost:3000/"
         # url = os.path.abspath(os.path.dirname(os.getcwd())) + '/Web/index.html'

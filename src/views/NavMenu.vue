@@ -72,7 +72,9 @@
       <el-main class="shadow-inner dark:shadow-inner">
         <transition name="el-fade-in-linear">
           <keep-alive>
-            <router-view />
+            <el-scrollbar height="100%">
+              <router-view />
+            </el-scrollbar>
           </keep-alive>
         </transition>
       </el-main>
