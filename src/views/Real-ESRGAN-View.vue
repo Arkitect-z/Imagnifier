@@ -8,6 +8,7 @@
     >
       <el-upload
         multiple
+        accept=".jpg,.jpeg,.png,.webp"
         action="http://127.0.0.1:5000/action"
         list-type="picture-card"
         :on-preview="handlePictureCardPreview"
@@ -23,7 +24,7 @@
     </el-dialog>
     <el-button
       type="primary"
-      @click="saveImage"
+      @click="saveImage(fileList)"
       class="
         bg-blue-600
         hover:bg-blue-500
@@ -91,10 +92,13 @@ const uploadErrorResultMassage = (
     type: "error",
   });
 };
-const saveImage = () => {};
-// 提交表单
-const onSubmit = () => {
-  console.log("submit!");
+const saveImage = (fileList: UploadFile[]) => {
+  // 初始化XMLHttpRequest对象
+		const xhr = new XMLHttpRequest();
+		// 设置请求响应的URL
+		const url = "http://127.0.0.1:5000/upload";
+    xhr.open("POST", url, false);
+    xhr.send(""+fileList);
 };
 </script>
 

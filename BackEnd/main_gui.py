@@ -1,5 +1,6 @@
 import sys
 import os
+import threading
 
 from PyQt5.QtCore import QUrl, QThread
 from PyQt5.QtGui import QIcon
@@ -8,6 +9,28 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 
+from flask import Flask, request
+from flask_cors import CORS
+
+# 打开后端端口
+flask_app = Flask(__name__)
+# 解决跨域问题
+CORS(flask_app, supports_credentials=True)
+
+# 用于图片上传时返回200
+@flask_app.route("/action", methods=['POST'])
+def for_action():
+    return "<p>For Action!</p>"
+
+# 用于接收上传文件数据
+@flask_app.route('/upload', methods=['POST'])
+def upload_file():
+    if request.method == 'POST':
+        f = request.files['the_file']
+        f.save('./test.png')
+
+def flask_thread():
+    flask_app.run(debug=False, host='127.0.0.1', port=5000)
 
 # 使用pyqt5多线程来显示页面
 class LoadWeb(QThread):
@@ -49,5 +72,11 @@ if __name__ == '__main__':
     mainWin.setMinimumSize(1440, 900)
     # 显示
     mainWin.show()
+    # 设置多线程，防止与主界面相互干扰
+    upload_thread = threading.Thread(target=flask_thread)
+    # 设置守护线程，使端口随系统关闭
+    upload_thread.setDaemon(True)
+    # 启动线程
+    upload_thread.start()
     # 主循环
     sys.exit(app.exec_())
