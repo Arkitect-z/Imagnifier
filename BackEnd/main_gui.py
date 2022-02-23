@@ -20,14 +20,15 @@ CORS(flask_app, supports_credentials=True)
 # 用于图片上传时返回200
 @flask_app.route("/action", methods=['POST'])
 def for_action():
-    return "<p>For Action!</p>"
+    return None
 
 # 用于接收上传文件数据
 @flask_app.route('/upload', methods=['POST'])
 def upload_file():
     if request.method == 'POST':
-        f = request.files['the_file']
-        f.save('./test.png')
+        f = request.args
+        print(f)
+    return None
 
 def flask_thread():
     flask_app.run(debug=False, host='127.0.0.1', port=5000)

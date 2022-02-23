@@ -4,17 +4,25 @@
       Real-ESRGAN!!!
     </h1>
     <el-scrollbar
-      class="my-14 dark:bg-gray-700 mx-18 p-6 shadow-lg rounded-2xl border-opacity-60"
+      class="
+        my-14
+        dark:bg-gray-700
+        mx-18
+        p-6
+        shadow-lg
+        rounded-2xl
+        border-opacity-60
+      "
     >
       <el-upload
         multiple
         accept=".jpg,.jpeg,.png,.webp"
+        :http-request="uploadImage"
         action="http://127.0.0.1:5000/action"
         list-type="picture-card"
+        :on-change="uploadSuccessResultMassage"
         :on-preview="handlePictureCardPreview"
         :on-remove="handleRemove"
-        :on-success="uploadSuccessResultMassage"
-        :on-error="uploadErrorResultMassage"
       >
         <el-icon><plus /></el-icon>
       </el-upload>
@@ -24,7 +32,7 @@
     </el-dialog>
     <el-button
       type="primary"
-      @click="saveImage(fileList)"
+      @click="saveImage"
       class="
         bg-blue-600
         hover:bg-blue-500
@@ -41,7 +49,7 @@
     >
       <span>需要上传图片</span>
     </el-progress>
-     <p v-for="item in 20" :key="item" class="scrollbar-demo-item">{{ item }}</p>
+    <p v-for="item in 20" :key="item" class="scrollbar-demo-item">{{ item }}</p>
   </div>
 </template>
 <script lang="ts" setup>
@@ -50,10 +58,13 @@ import { ElMessage } from "element-plus";
 import { Plus } from "@element-plus/icons-vue";
 import type { UploadFile } from "element-plus/es/components/upload/src/upload.type";
 
+let uploadFileList: UploadFile[] = [];
 const dialogImageUrl = ref("");
 const dialogVisible = ref(false);
 // 移除图片
 const handleRemove = (file: UploadFile, fileList: UploadFile[]) => {
+  uploadFileList = fileList;
+  ElMessage("移除成功!");
   console.log(file, fileList);
 };
 // 文件列表中已上传的文件
@@ -61,44 +72,37 @@ const handlePictureCardPreview = (file: UploadFile) => {
   dialogImageUrl.value = file.url!;
   dialogVisible.value = true;
 };
-// 文件上传时消息
-const uploadProgress = (file: UploadFile, fileList: UploadFile[]) => {
-  console.log(file.url);
-};
 // 上传成功消息
 const uploadSuccessResultMassage = (
-  response: any,
   file: UploadFile,
   fileList: UploadFile[]
 ) => {
+  uploadFileList = fileList;
   ElMessage({
-    duration:1200,
+    duration: 1500,
     showClose: true,
     message: "上传成功!",
     type: "success",
+    grouping: true,
   });
   console.log(fileList);
 };
-// 上传失败消息
-const uploadErrorResultMassage = (
-  err: any,
-  file: UploadFile,
-  fileList: UploadFile[]
-) => {
-  ElMessage({
-    duration:1200,
-    showClose: true,
-    message: "上传失败!",
-    type: "error",
-  });
-};
-const saveImage = (fileList: UploadFile[]) => {
+const uploadImage = () => {};
+const saveImage = () => {
+  // 重写以简化POST字段
+  let rewriteUpload = new Array();
+  for (let key in uploadFileList) {
+    rewriteUpload.push({
+      name: uploadFileList[key].name,
+      url: uploadFileList[key].url,
+    });
+  }
   // 初始化XMLHttpRequest对象
-		const xhr = new XMLHttpRequest();
-		// 设置请求响应的URL
-		const url = "http://127.0.0.1:5000/upload";
-    xhr.open("POST", url, false);
-    xhr.send(""+fileList);
+  const xhr = new XMLHttpRequest();
+  // 设置请求响应的URL
+  const url = "http://127.0.0.1:5000/upload";
+  xhr.open("POST", url, false);
+  console.log(uploadFileList);
 };
 </script>
 
