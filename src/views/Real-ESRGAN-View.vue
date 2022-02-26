@@ -18,7 +18,7 @@
         multiple
         accept=".jpg,.jpeg,.png,.webp"
         :http-request="uploadImage"
-        action="http://127.0.0.1:5000/action"
+        action="#"
         list-type="picture-card"
         :on-change="uploadSuccessResultMassage"
         :on-preview="handlePictureCardPreview"
@@ -58,20 +58,14 @@ import { ElMessage } from "element-plus";
 import { Plus } from "@element-plus/icons-vue";
 import type { UploadFile } from "element-plus/es/components/upload/src/upload.type";
 
+const singleFIleSend = new FormData();
+const uploadImage = (fileParams: any) => {
+  singleFIleSend.append("files", fileParams.file);
+};
+// 上传的文件字典
 let uploadFileList: UploadFile[] = [];
 const dialogImageUrl = ref("");
 const dialogVisible = ref(false);
-// 移除图片
-const handleRemove = (file: UploadFile, fileList: UploadFile[]) => {
-  uploadFileList = fileList;
-  ElMessage("移除成功!");
-  console.log(file, fileList);
-};
-// 文件列表中已上传的文件
-const handlePictureCardPreview = (file: UploadFile) => {
-  dialogImageUrl.value = file.url!;
-  dialogVisible.value = true;
-};
 // 上传成功消息
 const uploadSuccessResultMassage = (
   file: UploadFile,
@@ -85,27 +79,36 @@ const uploadSuccessResultMassage = (
     type: "success",
     grouping: true,
   });
-  console.log(fileList);
 };
-const uploadImage = () => {};
+// 移除图片
+const handleRemove = (file: UploadFile, fileList: UploadFile[]) => {
+  uploadFileList = fileList;
+  ElMessage({
+    duration: 1500,
+    showClose: true,
+    message: "移除成功!",
+    grouping: true,
+  });
+};
+// 文件列表中已上传的文件
+const handlePictureCardPreview = (file: UploadFile) => {
+  dialogImageUrl.value = file.url!;
+  dialogVisible.value = true;
+};
 const saveImage = () => {
+  const readyToSend = new FormData();
   // 重写以简化POST字段
-  let rewriteUpload = new Array();
-  for (let key in uploadFileList) {
-    rewriteUpload.push({
-      name: uploadFileList[key].name,
-      url: uploadFileList[key].url,
-    });
-  }
+  readyToSend.append("sendData", JSON.stringify(uploadFileList));
   // 初始化XMLHttpRequest对象
   const xhr = new XMLHttpRequest();
   // 设置请求响应的URL
   const url = "http://127.0.0.1:5000/upload";
   xhr.open("POST", url, false);
+  xhr.send(singleFIleSend);
+  singleFIleSend.delete("files");
   console.log(uploadFileList);
 };
 </script>
-
 <style>
 .dark .el-upload {
   --tw-bg-opacity: 1;
