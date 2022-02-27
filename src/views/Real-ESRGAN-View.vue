@@ -100,11 +100,20 @@ const saveImage = () => {
   // 重写以简化POST字段
   readyToSend.append("sendData", JSON.stringify(uploadFileList));
   // 初始化XMLHttpRequest对象
-  const xhr = new XMLHttpRequest();
+  const xhrFileList = new XMLHttpRequest();
   // 设置请求响应的URL
   const url = "http://127.0.0.1:5000/upload";
-  xhr.open("POST", url, false);
-  xhr.send(singleFIleSend);
+  xhrFileList.open("POST", url, false);
+  xhrFileList.send(singleFIleSend);
+  // 发送选定的文件信息
+  // 初始化XMLHttpRequest对象
+  const xhrChosenFile = new XMLHttpRequest();
+  // 设置请求响应的URL
+  const urlChosenFile = "http://127.0.0.1:5000/action";
+  xhrChosenFile.open("POST", urlChosenFile, false);
+  xhrChosenFile.send(readyToSend);
+
+  // 清除缓存
   singleFIleSend.delete("files");
   console.log(uploadFileList);
 };

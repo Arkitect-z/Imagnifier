@@ -1,26 +1,48 @@
+# 导入常用组件
 import shutil
 import sys
 import os
 import threading
 import json
 
-from PyQt5.QtCore import QUrl, QThread
-from PyQt5.QtGui import QIcon
 # 导入QT
-# 导入常用组件
+from PyQt5.QtCore import QUrl
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 
+# 导入flask
 from flask import Flask, request
 from flask_cors import CORS
 
+# 导入放大器
+import inference_realesrgan as realesrgan
+
 UPLOAD_FOLDER = os.getcwd() + '/BackEnd/cache/image'
+MAGNIFIED_FOLDER = os.getcwd() + '/BackEnd/cache/result/'
 # 打开后端端口
 flask_app = Flask(__name__)
-flask_app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # 解决跨域问题
 CORS(flask_app, supports_credentials=True)
+
+# 用于接收上传文件数据
+@flask_app.route('/action', methods=['POST'])
+def chosen_file():
+    # 预防NameError
+    data_form = request.form["sendData"]
+    if data_form:
+        if not os.path.exists(MAGNIFIED_FOLDER):
+            os.makedirs(MAGNIFIED_FOLDER)
+        for each_file in json.loads(data_form):
+            file_name = os.path.join(UPLOAD_FOLDER, each_file.get("name"))
+            # 设置多线程，防止与主界面相互干扰
+            magnifier = threading.Thread(target=image_magnifier, args=(file_name,))
+            # 设置守护线程，使端口随系统关闭
+            magnifier.setDaemon(True)
+            # 启动线程
+            magnifier.start()
+    return "For Get Chosen File!"
 
 # 用于接收上传文件数据
 @flask_app.route('/upload', methods=['POST'])
@@ -39,17 +61,22 @@ def flask_thread():
 
 def clear_cache_thread():
     cache_file_path = os.getcwd() + "/BackEnd/cache/image/"
+    cache_result_path = os.getcwd() + "/BackEnd/cache/result/"
     if os.path.exists(cache_file_path):
         shutil.rmtree(cache_file_path)
+    if os.path.exists(cache_result_path):
+        shutil.rmtree(cache_result_path)
 
-# 使用pyqt5多线程来显示页面
-class LoadWeb(QThread):
-    def __init__(self):
-        super(LoadWeb, self).__init__()
-
-    def run(self):
-        print("use thread")
-
+def image_magnifier(file_name):
+    parser = {
+    'input_file_path': file_name,
+    'output_file_path': MAGNIFIED_FOLDER,
+    'model_name': 'RealESRGAN_x4plus',
+    'face_enhance': False,
+    'half': True,
+    'extension': 'auto'
+    }
+    realesrgan.prepare_model(parser)
 
 class MainWindow(QMainWindow):
 
@@ -82,7 +109,7 @@ if __name__ == '__main__':
     mainWin.setMinimumSize(1680, 1050)
     # 显示
     mainWin.show()
-    # 在线程中清楚缓存
+    # 在线程中清除缓存
     clear_cache = threading.Thread(target=clear_cache_thread)
     clear_cache.start()
     # 设置多线程，防止与主界面相互干扰
