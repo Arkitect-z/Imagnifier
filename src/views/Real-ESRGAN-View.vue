@@ -49,7 +49,27 @@
     >
       <span>需要上传图片</span>
     </el-progress>
-    <p v-for="item in 20" :key="item" class="scrollbar-demo-item">{{ item }}</p>
+    <el-scrollbar height="600px" class="mx-32">
+      <div v-for="item in 3" :key="item">
+        <ImgComparisonSlider class="image_compare">
+          <figure slot="first" class="before">
+            <img
+              style="width: 100%"
+              src="https://img-comparison-slider.sneas.io/demo/images/before.webp"
+            />
+            <figcaption>Before</figcaption>
+          </figure>
+          <figure slot="second" class="after">
+            <img
+              style="width: 100%"
+              src="https://img-comparison-slider.sneas.io/demo/images/after.webp"
+            />
+            <figcaption>After</figcaption>
+          </figure>
+        </ImgComparisonSlider>
+        <el-divider></el-divider>
+      </div>
+    </el-scrollbar>
   </div>
 </template>
 <script lang="ts" setup>
@@ -57,6 +77,7 @@ import { ref } from "vue";
 import { ElMessage } from "element-plus";
 import { Plus } from "@element-plus/icons-vue";
 import type { UploadFile } from "element-plus/es/components/upload/src/upload.type";
+import { ImgComparisonSlider } from "@img-comparison-slider/vue";
 
 const singleFIleSend = new FormData();
 const uploadImage = (fileParams: any) => {
@@ -134,5 +155,36 @@ const saveImage = () => {
 }
 .dark .el-upload-list__item .el-icon--close {
   color: #ffffff;
+}
+.image_compare {
+  transition: box-shadow 200ms ease-in-out;
+  border-radius: 15px;
+}
+.image_compare:focus {
+  outline: none;
+  box-shadow: 0px 0px 15px 3px #929792;
+}
+.before,
+.after {
+  margin: 0;
+}
+.before figcaption,
+.after figcaption {
+  background: #fff;
+  border: 1px solid #c0c0c0;
+  border-radius: 12px;
+  color: #2e3452;
+  opacity: 0.8;
+  padding: 12px;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  line-height: 100%;
+}
+.before figcaption {
+  left: 12px;
+}
+.after figcaption {
+  right: 12px;
 }
 </style>
