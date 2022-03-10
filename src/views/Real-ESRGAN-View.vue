@@ -50,7 +50,7 @@
       <span>需要上传图片</span>
     </el-progress>
     <el-scrollbar height="600px" class="mx-32">
-      <div v-for="item in 3" :key="item">
+      <div v-for="item in fileNum" :key="item">
         <ImgComparisonSlider class="image_compare">
           <figure slot="first" class="before">
             <img
@@ -80,6 +80,7 @@ import type { UploadFile } from "element-plus/es/components/upload/src/upload.ty
 import { ImgComparisonSlider } from "@img-comparison-slider/vue";
 
 const singleFIleSend = new FormData();
+let fileNum = 0;
 const uploadImage = (fileParams: any) => {
   singleFIleSend.append("files", fileParams.file);
 };
@@ -117,6 +118,8 @@ const handlePictureCardPreview = (file: UploadFile) => {
   dialogVisible.value = true;
 };
 const saveImage = () => {
+  fileNum = uploadFileList.length;
+  console.log(fileNum);
   const readyToSend = new FormData();
   // 重写以简化POST字段
   readyToSend.append("sendData", JSON.stringify(uploadFileList));

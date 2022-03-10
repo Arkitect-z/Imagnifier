@@ -12,7 +12,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 
 # 导入flask
-from flask import Flask, request
+from flask import Flask, make_response, request
 from flask_cors import CORS
 
 # 导入放大器
@@ -55,6 +55,16 @@ def upload_file():
         for each_file in files:
             each_file.save(os.path.join(UPLOAD_FOLDER, each_file.filename))
     return "For Upload!"
+
+# 前端显示图片
+@app.route('/cache/result/<path:file>', methods=['GET'])
+def show_photo(file):
+    if request.method == 'GET':
+        if not file is None:
+            image_data = open(f'/cache/result/{file}', "rb").read()
+            response = make_response(image_data)
+            response.headers['Content-Type'] = 'image/png'
+            return response
 
 def flask_thread():
     flask_app.run(debug=False, host='127.0.0.1', port=5000)
