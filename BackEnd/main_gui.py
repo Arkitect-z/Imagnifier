@@ -57,7 +57,7 @@ def upload_file():
     return "For Upload!"
 
 # 前端显示图片
-@app.route('/cache/result/<path:file>', methods=['GET'])
+@flask_app.route('/cache/result/<path:file>', methods=['GET'])
 def show_photo(file):
     if request.method == 'GET':
         if not file is None:
