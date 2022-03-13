@@ -44,10 +44,10 @@
       class="my-14 mx-72"
       :text-inside="true"
       :stroke-width="20"
-      :percentage="0"
+      :percentage="percentage"
       status="success"
     >
-      <span>需要上传图片</span>
+      <span class="text-gray-900">{{ percentageText }}</span>
     </el-progress>
     <el-scrollbar height="600px" class="mx-32">
       <div v-for="item in fileNum" :key="item">
@@ -79,6 +79,8 @@ import { Plus } from "@element-plus/icons-vue";
 import type { UploadFile } from "element-plus/es/components/upload/src/upload.type";
 import { ImgComparisonSlider } from "@img-comparison-slider/vue";
 
+const percentage = ref(0);
+const percentageText = ref("需要上传图片");
 const singleFIleSend = new FormData();
 let fileNum = 0;
 const uploadImage = (fileParams: any) => {
@@ -101,6 +103,8 @@ const uploadSuccessResultMassage = (
     type: "success",
     grouping: true,
   });
+  percentage.value = 10;
+  percentageText.value = "图片选择完成";
 };
 // 移除图片
 const handleRemove = (file: UploadFile, fileList: UploadFile[]) => {
@@ -111,6 +115,11 @@ const handleRemove = (file: UploadFile, fileList: UploadFile[]) => {
     message: "移除成功!",
     grouping: true,
   });
+  // 当图片删除干净时，进度条重置为0
+  if (fileList.length == 0) {
+    percentage.value = 0;
+    percentageText.value = "需要上传图片";
+  }
 };
 // 文件列表中已上传的文件
 const handlePictureCardPreview = (file: UploadFile) => {
@@ -121,25 +130,47 @@ const saveImage = () => {
   fileNum = uploadFileList.length;
   console.log(fileNum);
   const readyToSend = new FormData();
-  // 重写以简化POST字段
+  // 添加需要的POST字段
   readyToSend.append("sendData", JSON.stringify(uploadFileList));
   // 初始化XMLHttpRequest对象
   const xhrFileList = new XMLHttpRequest();
-  // 设置请求响应的URL
+  // 设置请求响应的URL，此处为图片选择时的请求
   const url = "http://127.0.0.1:5000/upload";
   xhrFileList.open("POST", url, false);
   xhrFileList.send(singleFIleSend);
   // 发送选定的文件信息
   // 初始化XMLHttpRequest对象
   const xhrChosenFile = new XMLHttpRequest();
-  // 设置请求响应的URL
+  // 设置请求响应的URL，此处为点击"选好了"按钮时的请求
   const urlChosenFile = "http://127.0.0.1:5000/action";
-  xhrChosenFile.open("POST", urlChosenFile, false);
+  xhrChosenFile.open("POST", urlChosenFile, true);
+  // 绑定响应状态事件监听函数
+  xhrChosenFile.onreadystatechange = function () {
+    if (xhrChosenFile.readyState == 4) {
+      // 监听HTTP状态码
+      if (xhrChosenFile.status == 200 || xhrChosenFile.status == 0) {
+        // 接收数据
+        console.log(xhrChosenFile.responseText);
+        percentage.value = 20;
+        percentageText.value = "上传完成，正在处理";
+      }
+    }
+  };
   xhrChosenFile.send(readyToSend);
+
+  // 获得图片处理进度
+  const xhrGetState = new XMLHttpRequest();
+  const urlGetState = "http://127.0.0.1:5000/state";
+  xhrGetState.open("GET", urlGetState, true);
+  percentage.value = parseInt(xhrGetState.responseText);
+  xhrGetState.send(null);
 
   // 清除缓存
   singleFIleSend.delete("files");
   console.log(uploadFileList);
+  // // 进度条设为上传完成状态
+  // percentage.value = 100;
+  // percentageText.value = "上传完成，正在处理";
 };
 </script>
 <style>

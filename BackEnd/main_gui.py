@@ -56,6 +56,12 @@ def upload_file():
             each_file.save(os.path.join(UPLOAD_FOLDER, each_file.filename))
     return "For Upload!"
 
+# 用于返回处理状态
+@flask_app.route('/state', methods=['GET'])
+def get_state():
+    numtime = "50"
+    return numtime
+
 # 前端显示图片
 @flask_app.route('/cache/result/<path:file>', methods=['GET'])
 def show_photo(file):
