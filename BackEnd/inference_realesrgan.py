@@ -106,6 +106,8 @@ def prepare_model(parser):
             if img_mode == 'RGBA':  # RGBA images should be saved in png format
                 extension = 'png'
             # Suffix of the restored image
-            save_path = os.path.join(args['output_file_path'], f"{imgname}_{'out'}.{extension}")
+            # f"{imgname}_{'out'}.{extension}"
+            save_path = os.path.join(args['output_file_path'], f"{imgname}.{extension}")
             cv2.imwrite(save_path, output)
+    print(imgname + " done!")
 

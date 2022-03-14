@@ -2,6 +2,7 @@
 import shutil
 import sys
 import os
+from tempfile import tempdir
 import threading
 import json
 
@@ -12,7 +13,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 
 # 导入flask
-from flask import Flask, make_response, request
+from flask import Flask, make_response, request, g
 from flask_cors import CORS
 
 # 导入放大器
@@ -26,9 +27,14 @@ flask_app = Flask(__name__)
 # 解决跨域问题
 CORS(flask_app, supports_credentials=True)
 
+@flask_app.before_request
+def set_percentage():
+    g.percentage = 20
+
 # 用于接收上传文件数据
 @flask_app.route('/action', methods=['POST'])
 def chosen_file():
+    g.name = 25
     # 预防NameError
     data_form = request.form["sendData"]
     if data_form:
@@ -54,13 +60,13 @@ def upload_file():
             os.makedirs(UPLOAD_FOLDER)
         for each_file in files:
             each_file.save(os.path.join(UPLOAD_FOLDER, each_file.filename))
-    return "For Upload!"
+    return "For Upload!"                                  
 
 # 用于返回处理状态
 @flask_app.route('/state', methods=['GET'])
 def get_state():
-    numtime = "50"
-    return numtime
+    g.percentage += 5
+    return str(g.percentage)
 
 # 前端显示图片
 @flask_app.route('/cache/result/<path:file>', methods=['GET'])
