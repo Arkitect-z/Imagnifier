@@ -27,20 +27,15 @@ flask_app = Flask(__name__)
 # 解决跨域问题
 CORS(flask_app, supports_credentials=True)
 
-@flask_app.before_request
-def set_percentage():
-    g.percentage = 20
-
 # 用于接收上传文件数据
 @flask_app.route('/action', methods=['POST'])
 def chosen_file():
-    g.name = 25
     # 预防NameError
     data_form = request.form["sendData"]
     if data_form:
         if not os.path.exists(MAGNIFIED_FOLDER):
             os.makedirs(MAGNIFIED_FOLDER)
-        for each_file in json.loads(data_form):
+        for each_file in json.loads(data_form).get("_value"):
             file_name = os.path.join(UPLOAD_FOLDER, each_file.get("name"))
             # 设置多线程，防止与主界面相互干扰
             magnifier = threading.Thread(target=image_magnifier, args=(file_name,))
@@ -61,12 +56,6 @@ def upload_file():
         for each_file in files:
             each_file.save(os.path.join(UPLOAD_FOLDER, each_file.filename))
     return "For Upload!"                                  
-
-# 用于返回处理状态
-@flask_app.route('/state', methods=['GET'])
-def get_state():
-    g.percentage += 5
-    return str(g.percentage)
 
 # 前端显示图片
 @flask_app.route('/cache/result/<path:file>', methods=['GET'])
@@ -115,17 +104,16 @@ class MainWindow(QMainWindow):
         self.browser.setZoomFactor(self.browser.zoomFactor() + 0.4)
         # 获取相对路径
         url = "http://localhost:3000/"
-        # url = os.path.abspath(os.path.dirname(os.getcwd())) + '/Web/index.html'
         self.browser.load(QUrl(url))
         self.setCentralWidget(self.browser)
 
         # 添加窗口标题
-        self.setWindowTitle("图片放大App")
+        self.setWindowTitle("图片智能放大App")
+        self.setWindowIcon(QIcon(os.getcwd() + "/BackEnd/logo64.ico"))
 
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    app.setWindowIcon(QIcon("images/icon.ico"))
     # 创建一个主窗口
     mainWin = MainWindow()
     mainWin.setMinimumSize(1680, 1050)

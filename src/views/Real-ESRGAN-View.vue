@@ -55,14 +55,14 @@
           <figure slot="first" class="before">
             <img
               style="width: 100%"
-              src="https://img-comparison-slider.sneas.io/demo/images/before.webp"
+              src="../../BackEnd/cache/image/test.png"
             />
             <figcaption>Before</figcaption>
           </figure>
           <figure slot="second" class="after">
             <img
               style="width: 100%"
-              src="https://img-comparison-slider.sneas.io/demo/images/after.webp"
+              src="../../BackEnd/cache/result/test.png"
             />
             <figcaption>After</figcaption>
           </figure>
@@ -79,15 +79,19 @@ import { Plus } from "@element-plus/icons-vue";
 import type { UploadFile } from "element-plus/es/components/upload/src/upload.type";
 import { ImgComparisonSlider } from "@img-comparison-slider/vue";
 
+// 进度条值
 const percentage = ref(0);
-const imageNum = ref(0);
 const percentageText = ref("需要上传图片");
+// 需要显示的图片数量
+const imageNum = ref(0);
+// 文件存储
 const singleFIleSend = new FormData();
 const uploadImage = (fileParams: any) => {
   singleFIleSend.append("files", fileParams.file);
 };
 // 上传的文件字典
-let uploadFileList: UploadFile[] = [];
+const uploadFileList = ref([] as UploadFile[]);
+// 图片显示
 const dialogImageUrl = ref("");
 const dialogVisible = ref(false);
 // 上传成功消息
@@ -95,7 +99,7 @@ const uploadSuccessResultMassage = (
   file: UploadFile,
   fileList: UploadFile[]
 ) => {
-  uploadFileList = fileList;
+  uploadFileList.value = fileList;
   ElMessage({
     duration: 1500,
     showClose: true,
@@ -108,7 +112,7 @@ const uploadSuccessResultMassage = (
 };
 // 移除图片
 const handleRemove = (file: UploadFile, fileList: UploadFile[]) => {
-  uploadFileList = fileList;
+  uploadFileList.value = fileList;
   ElMessage({
     duration: 1500,
     showClose: true,
@@ -126,8 +130,13 @@ const handlePictureCardPreview = (file: UploadFile) => {
   dialogImageUrl.value = file.url!;
   dialogVisible.value = true;
 };
+const getBeforeUrl = (id: Number) => {
+  const url = "../../BackEnd/cache/image/" + "test.png";
+  return url;
+}
+// 点击"选好了"按钮事件
 const saveImage = () => {
-  imageNum.value = uploadFileList.length;
+  imageNum.value = uploadFileList.value.length;
   const readyToSend = new FormData();
   // 添加需要的POST字段
   readyToSend.append("sendData", JSON.stringify(uploadFileList));
