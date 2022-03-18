@@ -33,9 +33,10 @@
     <el-button
       type="primary"
       @click="saveImage"
+      :loading="isLoading"
       class="
-        bg-blue-600
-        hover:bg-blue-500
+        bg-blue-500
+        hover:bg-blue-400
         dark:bg-blue-900 dark:hover:bg-blue-800
       "
       >选好了</el-button
@@ -49,26 +50,78 @@
     >
       <span class="text-gray-900">{{ percentageText }}</span>
     </el-progress>
-    <el-scrollbar height="600px" class="mx-32">
-      <div v-for="item in imageNum" :key="item">
-        <ImgComparisonSlider class="image_compare">
-          <figure slot="first" class="before">
-            <img
-              style="width: 100%"
-              src="../../BackEnd/cache/image/test.png"
-            />
-            <figcaption>Before</figcaption>
-          </figure>
-          <figure slot="second" class="after">
-            <img
-              style="width: 100%"
-              src="../../BackEnd/cache/result/test.png"
-            />
-            <figcaption>After</figcaption>
-          </figure>
-        </ImgComparisonSlider>
-        <el-divider></el-divider>
-      </div>
+
+    <el-divider></el-divider>
+    <el-scrollbar height="600px">
+      <el-row justify="center">
+        <el-col
+          v-for="(eachImage, index) in uploadFileListForShow"
+          :key="eachImage"
+          :span="6"
+          class="grid gap-4"
+        >
+          <el-card
+            shadow="hover"
+            class="m-2 bg-white dark:bg-gray-800"
+            style="width: 210px"
+          >
+            <img :src="eachImage['url']" class="image" />
+            <div
+              class="w-full grid grid-flow-row auto-rows-max place-self-center"
+            >
+              <div class="mt-6 text-black dark:text-white">
+                <span>{{ eachImage["name"] }}</span>
+              </div>
+              <div>
+                <el-button
+                  type="primary"
+                  @click="showResult(eachImage.name)"
+                  style="width: 50%"
+                  class="
+                    my-6
+                    bg-blue-500
+                    hover:bg-blue-400
+                    dark:bg-blue-900 dark:hover:bg-blue-800
+                  "
+                  >查看对比</el-button
+                >
+              </div>
+              <div>
+                <el-button
+                  type="primary"
+                  @click="showResult"
+                  style="width: 50%"
+                  class="
+                    mb-4
+                    text-white
+                    hover:text-white
+                    bg-blue-500
+                    hover:bg-blue-400
+                    dark:bg-blue-900 dark:hover:bg-blue-800
+                  "
+                  >保存本地</el-button
+                >
+              </div>
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>
+      <el-dialog v-model="dialogVisibleResult">
+        <el-scrollbar height="400px" style="max-heigt:400px;">
+          <ImgComparisonSlider
+            class="image_compare m-6 self-stretch"
+          >
+            <figure slot="first" class="before">
+              <img style="width: 100%" :src="beforeImageUrl" />
+              <figcaption>Before</figcaption>
+            </figure>
+            <figure slot="second" class="after">
+              <img style="width: 100%" :src="afterImageUrl" />
+              <figcaption>After</figcaption>
+            </figure>
+          </ImgComparisonSlider>
+        </el-scrollbar>
+      </el-dialog>
     </el-scrollbar>
   </div>
 </template>
@@ -79,11 +132,11 @@ import { Plus } from "@element-plus/icons-vue";
 import type { UploadFile } from "element-plus/es/components/upload/src/upload.type";
 import { ImgComparisonSlider } from "@img-comparison-slider/vue";
 
+// 按钮加载中
+const isLoading = ref(false);
 // 进度条值
 const percentage = ref(0);
 const percentageText = ref("需要上传图片");
-// 需要显示的图片数量
-const imageNum = ref(0);
 // 文件存储
 const singleFIleSend = new FormData();
 const uploadImage = (fileParams: any) => {
@@ -91,9 +144,14 @@ const uploadImage = (fileParams: any) => {
 };
 // 上传的文件字典
 const uploadFileList = ref([] as UploadFile[]);
-// 图片显示
+const uploadFileListForShow = ref([] as UploadFile[]);
+// 图片预览显示
 const dialogImageUrl = ref("");
 const dialogVisible = ref(false);
+// 图片结果显示
+const beforeImageUrl = ref("");
+const afterImageUrl = ref("");
+const dialogVisibleResult = ref(false);
 // 上传成功消息
 const uploadSuccessResultMassage = (
   file: UploadFile,
@@ -130,48 +188,53 @@ const handlePictureCardPreview = (file: UploadFile) => {
   dialogImageUrl.value = file.url!;
   dialogVisible.value = true;
 };
-const getBeforeUrl = (id: Number) => {
-  const url = "../../BackEnd/cache/image/" + "test.png";
-  return url;
-}
 // 点击"选好了"按钮事件
 const saveImage = () => {
-  imageNum.value = uploadFileList.value.length;
-  const readyToSend = new FormData();
-  // 添加需要的POST字段
-  readyToSend.append("sendData", JSON.stringify(uploadFileList));
-  // 初始化XMLHttpRequest对象
-  const xhrFileList = new XMLHttpRequest();
-  // 设置请求响应的URL，此处为图片选择时的请求
-  const url = "http://127.0.0.1:5000/upload";
-  xhrFileList.open("POST", url, false);
-  xhrFileList.send(singleFIleSend);
-  // 发送选定的文件信息
-  // 初始化XMLHttpRequest对象
-  const xhrChosenFile = new XMLHttpRequest();
-  // 设置请求响应的URL，此处为点击"选好了"按钮时的请求
-  const urlChosenFile = "http://127.0.0.1:5000/action";
-  xhrChosenFile.open("POST", urlChosenFile, true);
-  // 绑定响应状态事件监听函数
-  xhrChosenFile.onreadystatechange = function () {
-    if (xhrChosenFile.readyState == 4) {
-      // 监听HTTP状态码
-      if (xhrChosenFile.status == 200 || xhrChosenFile.status == 0) {
-        // 接收数据
-        percentage.value = 90;
-        percentageText.value = "上传完成，正在处理";
+  if (uploadFileList.value.length != 0) {
+    isLoading.value = true;
+    uploadFileListForShow.value = uploadFileList.value;
+    const readyToSend = new FormData();
+    // 添加需要的POST字段
+    readyToSend.append("sendData", JSON.stringify(uploadFileList));
+    // 初始化XMLHttpRequest对象
+    const xhrFileList = new XMLHttpRequest();
+    // 设置请求响应的URL，此处为图片选择时的请求
+    const url = "http://127.0.0.1:5000/upload";
+    xhrFileList.open("POST", url, false);
+    xhrFileList.send(singleFIleSend);
+    // 发送选定的文件信息
+    // 初始化XMLHttpRequest对象
+    const xhrChosenFile = new XMLHttpRequest();
+    // 设置请求响应的URL，此处为点击"选好了"按钮时的请求
+    const urlChosenFile = "http://127.0.0.1:5000/action";
+    xhrChosenFile.open("POST", urlChosenFile, true);
+    // 绑定响应状态事件监听函数
+    xhrChosenFile.onreadystatechange = function () {
+      if (xhrChosenFile.readyState == 4) {
+        // 监听HTTP状态码
+        if (xhrChosenFile.status == 200 || xhrChosenFile.status == 0) {
+          // 接收数据
+          percentage.value = 90;
+          percentageText.value = "上传完成，正在处理";
+        }
       }
-    }
-  };
-  xhrChosenFile.send(readyToSend);
-  // 获得图片处理进度
-  // const xhrGetState = new XMLHttpRequest();
-  // const urlGetState = "http://127.0.0.1:5000/state";
-  // 清除缓存
-  singleFIleSend.delete("files");
-  // // 进度条设为上传完成状态
-  // percentage.value = 100;
-  // percentageText.value = "处理完成";
+    };
+    xhrChosenFile.send(readyToSend);
+    // 获得图片处理进度
+    // const xhrGetState = new XMLHttpRequest();
+    // const urlGetState = "http://127.0.0.1:5000/state";
+    // 清除缓存
+    singleFIleSend.delete("files");
+    // // 进度条设为上传完成状态
+    // percentage.value = 100;
+    // percentageText.value = "处理完成";
+    isLoading.value = false;
+  }
+};
+const showResult = (imageName: String) => {
+  beforeImageUrl.value = "../../BackEnd/cache/image/" + imageName;
+  afterImageUrl.value = "../../BackEnd/cache/result/" + imageName;
+  dialogVisibleResult.value = true;
 };
 </script>
 <style>
@@ -197,7 +260,7 @@ const saveImage = () => {
 }
 .image_compare:focus {
   outline: none;
-  box-shadow: 0px 0px 15px 3px #929792;
+  box-shadow: 0px 0px 10px 2px #929792;
 }
 .before,
 .after {
@@ -221,5 +284,13 @@ const saveImage = () => {
 }
 .after figcaption {
   right: 12px;
+}
+.image {
+  width: 100%;
+  display: block;
+}
+.dark .el-dialog {
+  --tw-bg-opacity: 1;
+  --el-dialog-bg-color: rgb(55 65 81 / var(--tw-bg-opacity));
 }
 </style>

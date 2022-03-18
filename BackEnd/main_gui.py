@@ -8,7 +8,7 @@ import json
 
 # 导入QT
 from PyQt5.QtCore import QUrl
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 
@@ -109,7 +109,8 @@ class MainWindow(QMainWindow):
 
         # 添加窗口标题
         self.setWindowTitle("图片智能放大App")
-        self.setWindowIcon(QIcon(os.getcwd() + "/BackEnd/logo64.ico"))
+        # icon = QIcon().addPixmap(QPixmap(os.getcwd() + "/BackEnd/logo.ico"), QIcon.Normal, QIcon.Off)
+        # self.setWindowIcon(icon)
 
 
 if __name__ == '__main__':
