@@ -1,3 +1,5 @@
+<img width="32" alt="logo" src="https://user-images.githubusercontent.com/53122135/158972105-8c9f8d81-76ea-4064-8970-b6e58128b1bc.png">
+
 # Imagnifier
 > 一个集成 Vue 3 + Vite 2 + Vue-Router 4 + Vuex 4 + TailWindCss + TypeScript + ESLint 等框架与组件的动漫图片放大器的前端实现，与后端python实现
 
