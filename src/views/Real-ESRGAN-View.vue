@@ -107,10 +107,8 @@
         </el-col>
       </el-row>
       <el-dialog v-model="dialogVisibleResult">
-        <el-scrollbar height="400px" style="max-heigt:400px;">
-          <ImgComparisonSlider
-            class="image_compare m-6 self-stretch"
-          >
+        <el-scrollbar height="400px" style="max-heigt: 400px">
+          <ImgComparisonSlider class="image_compare m-6 self-stretch">
             <figure slot="first" class="before">
               <img style="width: 100%" :src="beforeImageUrl" />
               <figcaption>Before</figcaption>
@@ -131,6 +129,7 @@ import { ElMessage } from "element-plus";
 import { Plus } from "@element-plus/icons-vue";
 import type { UploadFile } from "element-plus/es/components/upload/src/upload.type";
 import { ImgComparisonSlider } from "@img-comparison-slider/vue";
+import { Server } from "socket.io";
 
 // 按钮加载中
 const isLoading = ref(false);
@@ -192,7 +191,6 @@ const handlePictureCardPreview = (file: UploadFile) => {
 const saveImage = () => {
   if (uploadFileList.value.length != 0) {
     isLoading.value = true;
-    uploadFileListForShow.value = uploadFileList.value;
     const readyToSend = new FormData();
     // 添加需要的POST字段
     readyToSend.append("sendData", JSON.stringify(uploadFileList));
@@ -214,7 +212,7 @@ const saveImage = () => {
         // 监听HTTP状态码
         if (xhrChosenFile.status == 200 || xhrChosenFile.status == 0) {
           // 接收数据
-          percentage.value = 90;
+          percentage.value = 20;
           percentageText.value = "上传完成，正在处理";
         }
       }
@@ -225,12 +223,40 @@ const saveImage = () => {
     // const urlGetState = "http://127.0.0.1:5000/state";
     // 清除缓存
     singleFIleSend.delete("files");
-    // // 进度条设为上传完成状态
+    // 进度条设为上传完成状态
     // percentage.value = 100;
     // percentageText.value = "处理完成";
+    // 按钮置为可用状态
+    getStateFromBackend();
     isLoading.value = false;
   }
 };
+
+const getStateFromBackend = () => {
+  let responseText = "20";
+  // 初始化XMLHttpRequest对象
+  const xhrGetState = new XMLHttpRequest();
+  // 设置请求响应的URL，此处为点击"选好了"按钮时的请求
+  const urlGetState = "http://127.0.0.1:5000/state";
+  xhrGetState.onreadystatechange = function () {
+    //服务器返回值的处理函数，此处使用匿名函数进行实现
+    if (xhrGetState.readyState == 4 && xhrGetState.status == 200) {
+      responseText = xhrGetState.responseText;
+      percentage.value = parseInt(responseText);
+    }
+  };
+  let setIntervalTime: NodeJS.Timeout | null = setInterval(function () {
+    xhrGetState.open("GET", urlGetState, false);
+    xhrGetState.send(null);
+    if (parseInt(responseText) == 100) {
+      clearInterval(Number(setIntervalTime));
+      percentageText.value = "处理完成，请查看结果";
+      // 显示结果
+      uploadFileListForShow.value = uploadFileList.value;
+    }
+  }, 500);
+};
+
 const showResult = (imageName: String) => {
   beforeImageUrl.value = "../../BackEnd/cache/image/" + imageName;
   afterImageUrl.value = "../../BackEnd/cache/result/" + imageName;

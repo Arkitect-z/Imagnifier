@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 
 # 导入flask
-from flask import Flask, make_response, request, g
+from flask import Flask, make_response, request
 from flask_cors import CORS
 
 # 导入放大器
@@ -24,30 +24,39 @@ MAGNIFIED_FOLDER = os.getcwd() + '/BackEnd/cache/result/'
 # 打开后端端口
 flask_app = Flask(__name__)
 
-# 解决跨域问题
+# 支持跨域访问
 CORS(flask_app, supports_credentials=True)
 
-# 用于接收上传文件数据
+# 用于接收上传文件数据,button事件
 @flask_app.route('/action', methods=['POST'])
 def chosen_file():
+    global percentage
     # 预防NameError
     data_form = request.form["sendData"]
     if data_form:
         if not os.path.exists(MAGNIFIED_FOLDER):
             os.makedirs(MAGNIFIED_FOLDER)
-        for each_file in json.loads(data_form).get("_value"):
+        # 前端传来待处理文件列表
+        file_list = json.loads(data_form).get("_value")
+        # 文件列表长度
+        file_list_length = len(file_list)
+        # 每处理完一个文件，进度条前进数量
+        each_percentage = 80 / file_list_length
+        for each_file in file_list:
             file_name = os.path.join(UPLOAD_FOLDER, each_file.get("name"))
             # 设置多线程，防止与主界面相互干扰
-            magnifier = threading.Thread(target=image_magnifier, args=(file_name,))
+            magnifier = threading.Thread(target=image_magnifier, args=(file_name, each_percentage, ))
             # 设置守护线程，使端口随系统关闭
             magnifier.setDaemon(True)
             # 启动线程
             magnifier.start()
     return "For Get Chosen File!"
 
-# 用于接收上传文件数据
+# 用于接收上传文件数据,upload事件
 @flask_app.route('/upload', methods=['POST'])
 def upload_file():
+    global percentage
+    percentage = 20
     # 预防NameError
     files = request.files.getlist("files")
     if files:
@@ -55,7 +64,16 @@ def upload_file():
             os.makedirs(UPLOAD_FOLDER)
         for each_file in files:
             each_file.save(os.path.join(UPLOAD_FOLDER, each_file.filename))
-    return "For Upload!"                                  
+    return "For Upload!"
+
+# 前端获取后端处理状态
+@flask_app.route('/state', methods=['GET'])
+def get_percentage():
+    global percentage
+    # 防止进度条溢出
+    if percentage > 100:
+        percentage = 100
+    return str(int(percentage))
 
 # 前端显示图片
 @flask_app.route('/cache/result/<path:file>', methods=['GET'])
@@ -67,9 +85,11 @@ def show_photo(file):
             response.headers['Content-Type'] = 'image/png'
             return response
 
+# flask活动的多线程
 def flask_thread():
-    flask_app.run(debug=False, host='127.0.0.1', port=5000)
+    flask_app.run(debug=True, host='127.0.0.1', port=5000, use_reloader=False)
 
+# 清理cache的多线程
 def clear_cache_thread():
     cache_file_path = os.getcwd() + "/BackEnd/cache/image/"
     cache_result_path = os.getcwd() + "/BackEnd/cache/result/"
@@ -78,7 +98,8 @@ def clear_cache_thread():
     if os.path.exists(cache_result_path):
         shutil.rmtree(cache_result_path)
 
-def image_magnifier(file_name):
+def image_magnifier(file_name, each_percentage):
+    global percentage
     parser = {
     'input_file_path': file_name,
     'output_file_path': MAGNIFIED_FOLDER,
@@ -88,6 +109,7 @@ def image_magnifier(file_name):
     'extension': 'auto'
     }
     realesrgan.prepare_model(parser)
+    percentage += each_percentage
 
 class MainWindow(QMainWindow):
 
@@ -109,6 +131,7 @@ class MainWindow(QMainWindow):
 
         # 添加窗口标题
         self.setWindowTitle("图片智能放大App")
+        self.setWindowIcon(QIcon(os.getcwd() + "/BackEnd/logo.ico"))
         # icon = QIcon().addPixmap(QPixmap(os.getcwd() + "/BackEnd/logo.ico"), QIcon.Normal, QIcon.Off)
         # self.setWindowIcon(icon)
 
