@@ -30,6 +30,30 @@
     <el-dialog v-model="dialogVisible">
       <el-image width="100%" :src="dialogImageUrl" alt="" />
     </el-dialog>
+    <div class="text-gray-900 dark:text-white mx-20 mb-10">
+      <el-form :model="form" label-width="180px" label-position="left">
+        <el-form-item label="选用模型" class="text-gray-900 dark:text-white">
+          <el-radio-group v-model="form.model_name">
+            <el-radio-button label="realesrgan-x4plus" />
+            <el-radio-button label="reaesrnet-x4plus" />
+            <el-radio-button label="realesrgan-x4plus-anime" />
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="放大品质 (默认4)">
+          <el-slider v-model="form.sliderValue" :max="4" show-input />
+        </el-form-item>
+        <el-form-item label="启用面部增强 (默认否)">
+          <el-switch v-model="form.face_enhance" />
+        </el-form-item>
+        <el-form-item label="输出图片格式">
+          <el-radio-group v-model="form.out_ext">
+            <el-radio-button label="png" />
+            <el-radio-button label="jpg" />
+            <el-radio-button label="webp" />
+          </el-radio-group>
+        </el-form-item>
+      </el-form>
+    </div>
     <el-button
       type="primary"
       @click="saveImage"
@@ -129,7 +153,7 @@ import { ElMessage } from "element-plus";
 import { Plus } from "@element-plus/icons-vue";
 import type { UploadFile } from "element-plus/es/components/upload/src/upload.type";
 import { ImgComparisonSlider } from "@img-comparison-slider/vue";
-import { Server } from "socket.io";
+import { reactive } from "vue";
 
 // 按钮加载中
 const isLoading = ref(false);
@@ -151,6 +175,14 @@ const dialogVisible = ref(false);
 const beforeImageUrl = ref("");
 const afterImageUrl = ref("");
 const dialogVisibleResult = ref(false);
+// 表单
+const form = reactive({
+  // 图片品质滑块值
+  model_name: "realesrgan-x4plus",
+  sliderValue: 4,
+  face_enhance: false,
+  out_ext: "png",
+});
 // 上传成功消息
 const uploadSuccessResultMassage = (
   file: UploadFile,
@@ -194,6 +226,7 @@ const saveImage = () => {
     const readyToSend = new FormData();
     // 添加需要的POST字段
     readyToSend.append("sendData", JSON.stringify(uploadFileList));
+    readyToSend.append("form", JSON.stringify(form));
     // 初始化XMLHttpRequest对象
     const xhrFileList = new XMLHttpRequest();
     // 设置请求响应的URL，此处为图片选择时的请求
@@ -218,16 +251,11 @@ const saveImage = () => {
       }
     };
     xhrChosenFile.send(readyToSend);
-    // 获得图片处理进度
-    // const xhrGetState = new XMLHttpRequest();
-    // const urlGetState = "http://127.0.0.1:5000/state";
     // 清除缓存
     singleFIleSend.delete("files");
-    // 进度条设为上传完成状态
-    // percentage.value = 100;
-    // percentageText.value = "处理完成";
-    // 按钮置为可用状态
+    // 获得图片处理进度
     getStateFromBackend();
+    // 按钮置为可用状态
     isLoading.value = false;
   }
 };
@@ -274,7 +302,8 @@ const showResult = (imageName: String) => {
 .dark .el-upload-list--picture .el-upload-list__item {
   background-color: #4b5563;
 }
-.dark .el-upload-list__item-name {
+.dark .el-upload-list__item-name,
+.dark .el-form-item__label {
   color: #ffffff;
 }
 .dark .el-upload-list__item .el-icon--close {
@@ -318,5 +347,20 @@ const showResult = (imageName: String) => {
 .dark .el-dialog {
   --tw-bg-opacity: 1;
   --el-dialog-bg-color: rgb(55 65 81 / var(--tw-bg-opacity));
+}
+.dark .el-radio-button__inner {
+  --tw-bg-opacity: 1;
+  background: rgb(55 65 81 / var(--tw-bg-opacity));
+  color: white;
+  border: 1px solid #042b4d;
+}
+.dark .el-radio-button:first-child .el-radio-button__inner {
+  border-left: 1px solid #042b4d;
+}
+.dark .el-input__inner {
+  --tw-bg-opacity: 1;
+  background-color: rgb(55 65 81 / var(--tw-bg-opacity));
+  border: rgb(55 65 81 / var(--tw-bg-opacity));
+  color: white;
 }
 </style>

@@ -2,13 +2,12 @@
 import shutil
 import sys
 import os
-from tempfile import tempdir
 import threading
 import json
 
 # 导入QT
 from PyQt5.QtCore import QUrl
-from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 
@@ -19,6 +18,10 @@ from flask_cors import CORS
 # 导入放大器
 import inference_realesrgan as realesrgan
 
+# 设置任务栏图标
+import ctypes
+ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("myappid")
+
 UPLOAD_FOLDER = os.getcwd() + '/BackEnd/cache/image'
 MAGNIFIED_FOLDER = os.getcwd() + '/BackEnd/cache/result/'
 # 打开后端端口
@@ -28,6 +31,8 @@ flask_app = Flask(__name__)
 CORS(flask_app, supports_credentials=True)
 
 # 用于接收上传文件数据,button事件
+
+
 @flask_app.route('/action', methods=['POST'])
 def chosen_file():
     global percentage
@@ -45,7 +50,8 @@ def chosen_file():
         for each_file in file_list:
             file_name = os.path.join(UPLOAD_FOLDER, each_file.get("name"))
             # 设置多线程，防止与主界面相互干扰
-            magnifier = threading.Thread(target=image_magnifier, args=(file_name, each_percentage, ))
+            magnifier = threading.Thread(
+                target=image_magnifier, args=(file_name, each_percentage, ))
             # 设置守护线程，使端口随系统关闭
             magnifier.setDaemon(True)
             # 启动线程
@@ -53,6 +59,8 @@ def chosen_file():
     return "For Get Chosen File!"
 
 # 用于接收上传文件数据,upload事件
+
+
 @flask_app.route('/upload', methods=['POST'])
 def upload_file():
     global percentage
@@ -67,6 +75,8 @@ def upload_file():
     return "For Upload!"
 
 # 前端获取后端处理状态
+
+
 @flask_app.route('/state', methods=['GET'])
 def get_percentage():
     global percentage
@@ -76,6 +86,8 @@ def get_percentage():
     return str(int(percentage))
 
 # 前端显示图片
+
+
 @flask_app.route('/cache/result/<path:file>', methods=['GET'])
 def show_photo(file):
     if request.method == 'GET':
@@ -86,10 +98,14 @@ def show_photo(file):
             return response
 
 # flask活动的多线程
+
+
 def flask_thread():
     flask_app.run(debug=True, host='127.0.0.1', port=5000, use_reloader=False)
 
 # 清理cache的多线程
+
+
 def clear_cache_thread():
     cache_file_path = os.getcwd() + "/BackEnd/cache/image/"
     cache_result_path = os.getcwd() + "/BackEnd/cache/result/"
@@ -98,18 +114,20 @@ def clear_cache_thread():
     if os.path.exists(cache_result_path):
         shutil.rmtree(cache_result_path)
 
+
 def image_magnifier(file_name, each_percentage):
     global percentage
     parser = {
-    'input_file_path': file_name,
-    'output_file_path': MAGNIFIED_FOLDER,
-    'model_name': 'RealESRGAN_x4plus',
-    'face_enhance': False,
-    'half': True,
-    'extension': 'auto'
+        'input_file_path': file_name,
+        'output_file_path': MAGNIFIED_FOLDER,
+        'model_name': 'RealESRGAN_x4plus',
+        'face_enhance': False,
+        'half': True,
+        'extension': 'auto'
     }
     realesrgan.prepare_model(parser)
     percentage += each_percentage
+
 
 class MainWindow(QMainWindow):
 
