@@ -102,7 +102,7 @@ def prepare_model(parser):
             if args['extension'] == 'auto':
                 extension = extension[1:]
             else:
-                extension = args.ext
+                extension = args["extension"]
             if img_mode == 'RGBA':  # RGBA images should be saved in png format
                 extension = 'png'
             # Suffix of the restored image

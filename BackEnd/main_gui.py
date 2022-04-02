@@ -37,12 +37,14 @@ CORS(flask_app, supports_credentials=True)
 def chosen_file():
     global percentage
     # 预防NameError
-    data_form = request.form["sendData"]
-    if data_form:
+    pic_data = request.form["sendData"]
+    form_data = request.form["form"]
+    print(json.loads(form_data))
+    if pic_data:
         if not os.path.exists(MAGNIFIED_FOLDER):
             os.makedirs(MAGNIFIED_FOLDER)
         # 前端传来待处理文件列表
-        file_list = json.loads(data_form).get("_value")
+        file_list = json.loads(pic_data).get("_value")
         # 文件列表长度
         file_list_length = len(file_list)
         # 每处理完一个文件，进度条前进数量
@@ -51,7 +53,7 @@ def chosen_file():
             file_name = os.path.join(UPLOAD_FOLDER, each_file.get("name"))
             # 设置多线程，防止与主界面相互干扰
             magnifier = threading.Thread(
-                target=image_magnifier, args=(file_name, each_percentage, ))
+                target=image_magnifier, args=(file_name, each_percentage, json.loads(form_data), ))
             # 设置守护线程，使端口随系统关闭
             magnifier.setDaemon(True)
             # 启动线程
@@ -115,15 +117,16 @@ def clear_cache_thread():
         shutil.rmtree(cache_result_path)
 
 
-def image_magnifier(file_name, each_percentage):
+def image_magnifier(file_name, each_percentage, form_data):
     global percentage
     parser = {
         'input_file_path': file_name,
         'output_file_path': MAGNIFIED_FOLDER,
-        'model_name': 'RealESRGAN_x4plus',
-        'face_enhance': False,
+        'model_name': form_data["model_name"],
+        "outscale": form_data["sliderValue"],
+        'face_enhance': form_data["face_enhance"],
         'half': True,
-        'extension': 'auto'
+        'extension': form_data["out_ext"]
     }
     realesrgan.prepare_model(parser)
     percentage += each_percentage

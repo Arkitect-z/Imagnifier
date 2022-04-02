@@ -34,9 +34,9 @@
       <el-form :model="form" label-width="180px" label-position="left">
         <el-form-item label="选用模型" class="text-gray-900 dark:text-white">
           <el-radio-group v-model="form.model_name">
-            <el-radio-button label="realesrgan-x4plus" />
-            <el-radio-button label="reaesrnet-x4plus" />
-            <el-radio-button label="realesrgan-x4plus-anime" />
+            <el-radio-button label="RealESRGAN_x4plus" />
+            <el-radio-button label="RealESRNet_x4plus" />
+            <el-radio-button label="RealESRGAN_x4plus_anime_6B" />
           </el-radio-group>
         </el-form-item>
         <el-form-item label="放大品质 (默认4)">
@@ -174,11 +174,12 @@ const dialogVisible = ref(false);
 // 图片结果显示
 const beforeImageUrl = ref("");
 const afterImageUrl = ref("");
+const isButtonClicked = ref(false);
 const dialogVisibleResult = ref(false);
 // 表单
 const form = reactive({
   // 图片品质滑块值
-  model_name: "realesrgan-x4plus",
+  model_name: "RealESRGAN_x4plus",
   sliderValue: 4,
   face_enhance: false,
   out_ext: "png",
@@ -221,6 +222,7 @@ const handlePictureCardPreview = (file: UploadFile) => {
 };
 // 点击"选好了"按钮事件
 const saveImage = () => {
+  isButtonClicked.value = true;
   if (uploadFileList.value.length != 0) {
     isLoading.value = true;
     const readyToSend = new FormData();
@@ -347,6 +349,9 @@ const showResult = (imageName: String) => {
 .dark .el-dialog {
   --tw-bg-opacity: 1;
   --el-dialog-bg-color: rgb(55 65 81 / var(--tw-bg-opacity));
+}
+.el-radio-button__inner {
+  padding: 8px 22px;
 }
 .dark .el-radio-button__inner {
   --tw-bg-opacity: 1;
