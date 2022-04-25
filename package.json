@@ -9,6 +9,7 @@
   "dependencies": {
     "@img-comparison-slider/vue": "^7.4.3",
     "element-plus": "^2.0.2",
+    "tilt.js": "^1.2.1",
     "vue": "^3.2.20",
     "vue-ele-upload-image": "^2.0.12",
     "vue-router": "^4.0.12",

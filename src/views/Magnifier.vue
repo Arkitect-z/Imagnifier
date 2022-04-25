@@ -1,7 +1,7 @@
 <template>
   <div class="box-content p-12">
     <h1 class="text-gray-900 dark:text-white text-3xl font-bold">
-      Real-ESRGAN!!!
+      Magnifier!!!
     </h1>
     <el-scrollbar
       class="
@@ -30,17 +30,34 @@
     <el-dialog v-model="dialogVisible">
       <el-image width="100%" :src="dialogImageUrl" alt="" />
     </el-dialog>
-    <div class="text-gray-900 dark:text-white mx-20 mb-10">
+    <div
+      style="margin-left: 10vw; margin-right: 10vw"
+      class="text-gray-900 dark:text-white"
+    >
       <el-form :model="form" label-width="180px" label-position="left">
         <el-form-item label="选用模型" class="text-gray-900 dark:text-white">
-          <el-radio-group v-model="form.model_name">
-            <el-radio-button label="RealESRGAN_x4plus" />
-            <el-radio-button label="RealESRNet_x4plus" />
-            <el-radio-button label="RealESRGAN_x4plus_anime_6B" />
-          </el-radio-group>
+          <el-cascader
+            v-model="form.model_name"
+            :options="options"
+            :props="{ expandTrigger: 'hover' }"
+            @change="handleChange"
+            :show-all-levels="false"
+          />
         </el-form-item>
         <el-form-item label="放大品质 (默认4)">
-          <el-slider v-model="form.sliderValue" :max="4" show-input />
+          <el-slider
+            v-model="form.sliderValue"
+            :min="1"
+            :max="4"
+            show-input
+            class="hidden-sm-and-down"
+          />
+          <el-input-number
+            v-model="form.sliderValue"
+            :min="1"
+            :max="10"
+            class="hidden-md-and-up"
+          />
         </el-form-item>
         <el-form-item label="启用面部增强 (默认否)">
           <el-switch v-model="form.face_enhance" />
@@ -59,6 +76,7 @@
       @click="saveImage"
       :loading="isLoading"
       class="
+        mt-6
         bg-blue-500
         hover:bg-blue-400
         dark:bg-blue-900 dark:hover:bg-blue-800
@@ -66,7 +84,8 @@
       >选好了</el-button
     >
     <el-progress
-      class="my-14 mx-72"
+      style="margin-left: 20vw; margin-right: 20vw"
+      class="mt-10 hidden-sm-and-down"
       :text-inside="true"
       :stroke-width="20"
       :percentage="percentage"
@@ -74,62 +93,64 @@
     >
       <span class="text-gray-900">{{ percentageText }}</span>
     </el-progress>
+    <br />
+    <el-progress
+      type="circle"
+      :percentage="percentage"
+      class="my-14 hidden-md-and-up"
+    />
 
     <el-divider></el-divider>
-    <el-scrollbar height="600px">
-      <el-row justify="center">
-        <el-col
+    <el-scrollbar height="600px" class="px-10">
+      <div
+        style="
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+          grid-gap: 3em;
+        "
+      >
+        <div
           v-for="(eachImage, index) in uploadFileListForShow"
           :key="eachImage"
-          :span="6"
-          class="grid gap-4"
         >
-          <el-card
-            shadow="hover"
-            class="m-2 bg-white dark:bg-gray-800"
-            style="width: 210px"
-          >
+          <el-card shadow="hover" class="m-2 bg-white dark:bg-gray-800">
             <img :src="eachImage['url']" class="image" />
-            <div
-              class="w-full grid grid-flow-row auto-rows-max place-self-center"
-            >
+            <div>
               <div class="mt-6 text-black dark:text-white">
                 <span>{{ eachImage["name"] }}</span>
               </div>
-              <div>
-                <el-button
-                  type="primary"
-                  @click="showResult(eachImage.name)"
-                  style="width: 50%"
-                  class="
-                    my-6
-                    bg-blue-500
-                    hover:bg-blue-400
-                    dark:bg-blue-900 dark:hover:bg-blue-800
-                  "
-                  >查看对比</el-button
-                >
-              </div>
-              <div>
-                <el-button
-                  type="primary"
-                  @click="showResult"
-                  style="width: 50%"
-                  class="
-                    mb-4
-                    text-white
-                    hover:text-white
-                    bg-blue-500
-                    hover:bg-blue-400
-                    dark:bg-blue-900 dark:hover:bg-blue-800
-                  "
-                  >保存本地</el-button
-                >
-              </div>
+              <el-button
+                type="primary"
+                @click="showResult(eachImage.name)"
+                style="width: 50%"
+                class="
+                  my-6
+                  bg-blue-500
+                  hover:bg-blue-400
+                  dark:bg-blue-900 dark:hover:bg-blue-800
+                "
+                >查看对比</el-button
+              >
+            </div>
+            <div>
+              <el-button
+                type="primary"
+                @click="showResult"
+                style="width: 50%"
+                class="
+                  mb-4
+                  text-white
+                  hover:text-white
+                  bg-blue-500
+                  hover:bg-blue-400
+                  dark:bg-blue-900 dark:hover:bg-blue-800
+                "
+                >保存本地</el-button
+              >
             </div>
           </el-card>
-        </el-col>
-      </el-row>
+        </div>
+      </div>
       <el-dialog v-model="dialogVisibleResult">
         <el-scrollbar height="400px" style="max-heigt: 400px">
           <ImgComparisonSlider class="image_compare m-6 self-stretch">
@@ -154,7 +175,37 @@ import { Plus } from "@element-plus/icons-vue";
 import type { UploadFile } from "element-plus/es/components/upload/src/upload.type";
 import { ImgComparisonSlider } from "@img-comparison-slider/vue";
 import { reactive } from "vue";
+import "element-plus/theme-chalk/display.css";
 
+// 禁用右键与文字选中
+document.body.onselectstart = document.body.oncontextmenu = function () {
+  return false;
+};
+const options = [
+  {
+    value: "Waifu2x",
+    label: "Waifu2x",
+    children: [],
+  },
+  {
+    value: "RealESRGAN",
+    label: "RealESRGAN",
+    children: [
+      {
+        value: "RealESRGAN_x4plus",
+        label: "RealESRGAN_x4plus",
+      },
+      {
+        value: "RealESRNet_x4plus",
+        label: "RealESRNet_x4plus",
+      },
+      {
+        value: "RealESRGAN_x4plus_anime_6B",
+        label: "RealESRGAN_x4plus_anime_6B",
+      },
+    ],
+  },
+];
 // 按钮加载中
 const isLoading = ref(false);
 // 进度条值
@@ -179,11 +230,14 @@ const dialogVisibleResult = ref(false);
 // 表单
 const form = reactive({
   // 图片品质滑块值
-  model_name: "RealESRGAN_x4plus",
+  model_name: ["RealESRGAN", "RealESRGAN_x4plus"],
   sliderValue: 4,
   face_enhance: false,
   out_ext: "png",
 });
+const handleChange = () => {
+  console.log(form);
+};
 // 上传成功消息
 const uploadSuccessResultMassage = (
   file: UploadFile,
@@ -280,7 +334,7 @@ const getStateFromBackend = () => {
     xhrGetState.send(null);
     if (parseInt(responseText) == 100) {
       clearInterval(Number(setIntervalTime));
-      percentageText.value = "处理完成，请查看结果";
+      percentageText.value = "处理完成，请下滑查看结果";
       // 显示结果
       uploadFileListForShow.value = uploadFileList.value;
     }

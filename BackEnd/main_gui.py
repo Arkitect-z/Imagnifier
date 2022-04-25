@@ -122,7 +122,7 @@ def image_magnifier(file_name, each_percentage, form_data):
     parser = {
         'input_file_path': file_name,
         'output_file_path': MAGNIFIED_FOLDER,
-        'model_name': form_data["model_name"],
+        'model_name': form_data["model_name"][-1],
         "outscale": form_data["sliderValue"],
         'face_enhance': form_data["face_enhance"],
         'half': True,
@@ -161,7 +161,7 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     # 创建一个主窗口
     mainWin = MainWindow()
-    mainWin.setMinimumSize(1680, 1050)
+    # mainWin.setMinimumSize(1680, 1050)
     # 显示
     mainWin.show()
     # 在线程中清除缓存

@@ -30,29 +30,14 @@
             </div>
             <template #title>模型介绍</template>
           </el-menu-item>
-          <el-sub-menu index="/ModelSelect" class="dark:hover:bg-gray-500">
+          <el-menu-item index="/Magnifier" class="dark:hover:bg-gray-500">
+            <div class="dark:text-white">
+              <el-icon><Box /></el-icon>
+            </div>
             <template #title>
-              <div class="dark:text-white">
-                <el-icon><Box /></el-icon>
-              </div>
               <span>模型列表</span>
             </template>
-            <div>
-              <el-menu-item-group class="dark:bg-gray-700">
-                <template #title><span>可选模型</span></template>
-                <el-menu-item
-                  index="/Waifu2x"
-                  class="dark:text-white dark:hover:bg-gray-500"
-                  >Waifu2x</el-menu-item
-                >
-                <el-menu-item
-                  index="/Real-ESRGAN"
-                  class="dark:text-white dark:hover:bg-gray-500"
-                  >Real-ESRGAN</el-menu-item
-                >
-              </el-menu-item-group>
-            </div>
-          </el-sub-menu>
+          </el-menu-item>
           <el-menu-item index="/Setting" class="dark:hover:bg-gray-500">
             <div class="dark:text-white">
               <el-icon><Setting /></el-icon>
@@ -108,7 +93,7 @@ const darkMode = () => {
 
 <style>
 .el-main {
-    --el-main-padding: 0px;
+  --el-main-padding: 0px;
 }
 .el-aside {
   --el-aside-width: auto;

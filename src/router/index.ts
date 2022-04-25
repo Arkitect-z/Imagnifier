@@ -5,7 +5,7 @@ import Guidance from '../views/Guidance.vue'
 import Apps from '../views/Apps.vue'
 import Setting from '../views/Setting.vue'
 import Waifu2x from '../views/Waifu2x-View.vue'
-import RealESRGAN from '../views/Real-ESRGAN-View.vue'
+import Magnifier from '../views/Magnifier.vue'
 
 const routes: RouteRecordRaw[] = [
     {
@@ -30,8 +30,8 @@ const routes: RouteRecordRaw[] = [
                 component: Waifu2x,
             },
             {
-                path: '/Real-ESRGAN',
-                component: RealESRGAN,
+                path: '/Magnifier',
+                component: Magnifier,
             },
             {
                 path: '/:pathMatch(.*)*',
