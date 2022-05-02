@@ -1,0 +1,35 @@
+{
+    "path": {
+        "downloadUrl": "../../download/"
+    },
+    "model": [
+            {
+              "value": "Waifu2x",
+              "label": "Waifu2x",
+              "disabled": true,
+              "children": []
+            },
+            {
+              "value": "RealESRGAN",
+              "label": "RealESRGAN",
+              "disabled": false,
+              "children": [
+                {
+                  "value": "RealESRGAN_x4plus",
+                  "label": "RealESRGAN_x4plus",
+                  "disabled": false
+                },
+                {
+                  "value": "RealESRNet_x4plus",
+                  "label": "RealESRNet_x4plus",
+                  "disabled": true
+                },
+                {
+                  "value": "RealESRGAN_x4plus_anime_6B",
+                  "label": "RealESRGAN_x4plus_anime_6B",
+                  "disabled": true
+                }
+              ]
+            }
+          ]
+}

@@ -35,7 +35,8 @@ CORS(flask_app, supports_credentials=True)
 
 @flask_app.route('/action', methods=['POST'])
 def chosen_file():
-    global percentage
+    # 放大功能进度条的数值
+    global magnify_percentage
     # 预防NameError
     pic_data = request.form["sendData"]
     form_data = request.form["form"]
@@ -65,8 +66,8 @@ def chosen_file():
 
 @flask_app.route('/upload', methods=['POST'])
 def upload_file():
-    global percentage
-    percentage = 20
+    global magnify_percentage
+    magnify_percentage = 20
     # 预防NameError
     files = request.files.getlist("files")
     if files:
@@ -81,23 +82,19 @@ def upload_file():
 
 @flask_app.route('/state', methods=['GET'])
 def get_percentage():
-    global percentage
+    global magnify_percentage
     # 防止进度条溢出
-    if percentage > 100:
-        percentage = 100
-    return str(int(percentage))
-
-# 前端显示图片
+    if magnify_percentage > 100:
+        magnify_percentage = 100
+    return str(int(magnify_percentage))
 
 
-@flask_app.route('/cache/result/<path:file>', methods=['GET'])
-def show_photo(file):
-    if request.method == 'GET':
-        if not file is None:
-            image_data = open(f'/cache/result/{file}', "rb").read()
-            response = make_response(image_data)
-            response.headers['Content-Type'] = 'image/png'
-            return response
+@flask_app.route('/getSetting', methods=['GET'])
+def get_setting():
+    with open(os.getcwd() + "/BackEnd/setting.config.json", "r", encoding="utf-8") as f:
+        setting_data = json.load(f)
+    f.close()
+    return setting_data
 
 # flask活动的多线程
 
@@ -109,7 +106,9 @@ def flask_thread():
 
 
 def clear_cache_thread():
+    # 上传文件夹
     cache_file_path = os.getcwd() + "/BackEnd/cache/image/"
+    # 处理结果文件夹
     cache_result_path = os.getcwd() + "/BackEnd/cache/result/"
     if os.path.exists(cache_file_path):
         shutil.rmtree(cache_file_path)
@@ -118,7 +117,7 @@ def clear_cache_thread():
 
 
 def image_magnifier(file_name, each_percentage, form_data):
-    global percentage
+    global magnify_percentage
     parser = {
         'input_file_path': file_name,
         'output_file_path': MAGNIFIED_FOLDER,
@@ -129,7 +128,7 @@ def image_magnifier(file_name, each_percentage, form_data):
         'extension': form_data["out_ext"]
     }
     realesrgan.prepare_model(parser)
-    percentage += each_percentage
+    magnify_percentage += each_percentage
 
 
 class MainWindow(QMainWindow):

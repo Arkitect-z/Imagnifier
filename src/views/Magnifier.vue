@@ -42,6 +42,7 @@
             :props="{ expandTrigger: 'hover' }"
             @change="handleChange"
             :show-all-levels="false"
+            placeholder="还未装载任何模型"
           />
         </el-form-item>
         <el-form-item label="放大品质 (默认4)">
@@ -101,56 +102,66 @@
     />
 
     <el-divider></el-divider>
-    <el-scrollbar height="600px" class="px-10">
-      <div
-        style="
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-          grid-gap: 3em;
-        "
-      >
-        <div
+    <el-scrollbar height="600px">
+      <el-row justify="center">
+        <el-col
           v-for="(eachImage, index) in uploadFileListForShow"
           :key="eachImage"
+          :span="6"
+          class="grid gap-4"
         >
-          <el-card shadow="hover" class="m-2 bg-white dark:bg-gray-800">
-            <img :src="eachImage['url']" class="image" />
-            <div>
-              <div class="mt-6 text-black dark:text-white">
-                <span>{{ eachImage["name"] }}</span>
-              </div>
-              <el-button
-                type="primary"
-                @click="showResult(eachImage.name)"
-                style="width: 50%"
-                class="
-                  my-6
-                  bg-blue-500
-                  hover:bg-blue-400
-                  dark:bg-blue-900 dark:hover:bg-blue-800
-                "
-                >查看对比</el-button
-              >
+          <el-card
+            shadow="hover"
+            class="m-2 bg-white dark:bg-gray-800"
+            style="width: 210px; height: 380px"
+          >
+            <div class="image-contain">
+              <img :src="eachImage['url']" class="image" />
             </div>
-            <div>
-              <el-button
-                type="primary"
-                @click="showResult"
-                style="width: 50%"
-                class="
-                  mb-4
-                  text-white
-                  hover:text-white
-                  bg-blue-500
-                  hover:bg-blue-400
-                  dark:bg-blue-900 dark:hover:bg-blue-800
-                "
-                >保存本地</el-button
-              >
+            <div
+              class="w-full grid grid-flow-row auto-rows-max place-self-center"
+            >
+              <div class="mt-6 text-black dark:text-white">
+                <el-scrollbar max-height="24px">
+                  <span style="width: 168px; word-break: break-all">{{
+                    eachImage["name"]
+                  }}</span>
+                </el-scrollbar>
+              </div>
+              <div>
+                <el-button
+                  type="primary"
+                  @click="showResult(eachImage.name)"
+                  style="width: 50%"
+                  class="
+                    my-6
+                    bg-blue-500
+                    hover:bg-blue-400
+                    dark:bg-blue-900 dark:hover:bg-blue-800
+                  "
+                  >查看对比</el-button
+                >
+              </div>
+              <div>
+                <el-button
+                  type="primary"
+                  @click="saveResult(eachImage.name)"
+                  style="width: 50%"
+                  class="
+                    mb-4
+                    text-white
+                    hover:text-white
+                    bg-blue-500
+                    hover:bg-blue-400
+                    dark:bg-blue-900 dark:hover:bg-blue-800
+                  "
+                  >保存本地</el-button
+                >
+              </div>
             </div>
           </el-card>
-        </div>
-      </div>
+        </el-col>
+      </el-row>
       <el-dialog v-model="dialogVisibleResult">
         <el-scrollbar height="400px" style="max-heigt: 400px">
           <ImgComparisonSlider class="image_compare m-6 self-stretch">
@@ -176,36 +187,25 @@ import type { UploadFile } from "element-plus/es/components/upload/src/upload.ty
 import { ImgComparisonSlider } from "@img-comparison-slider/vue";
 import { reactive } from "vue";
 import "element-plus/theme-chalk/display.css";
+import axois from "axios";
+import axios from "axios";
 
 // 禁用右键与文字选中
 document.body.onselectstart = document.body.oncontextmenu = function () {
   return false;
 };
-const options = [
-  {
-    value: "Waifu2x",
-    label: "Waifu2x",
-    children: [],
-  },
-  {
-    value: "RealESRGAN",
-    label: "RealESRGAN",
-    children: [
-      {
-        value: "RealESRGAN_x4plus",
-        label: "RealESRGAN_x4plus",
-      },
-      {
-        value: "RealESRNet_x4plus",
-        label: "RealESRNet_x4plus",
-      },
-      {
-        value: "RealESRGAN_x4plus_anime_6B",
-        label: "RealESRGAN_x4plus_anime_6B",
-      },
-    ],
-  },
-];
+let options = [];
+// 获得当前设置
+const xhrGetSetting = new XMLHttpRequest();
+const urlGetSetting = "http://127.0.0.1:5000/getSetting";
+xhrGetSetting.onreadystatechange = function () {
+  if (xhrGetSetting.readyState == 4 && xhrGetSetting.status == 200) {
+    let responseText = xhrGetSetting.responseText;
+    options = JSON.parse(responseText).model;
+  }
+};
+xhrGetSetting.open("GET", urlGetSetting, false);
+xhrGetSetting.send(null);
 // 按钮加载中
 const isLoading = ref(false);
 // 进度条值
@@ -276,8 +276,9 @@ const handlePictureCardPreview = (file: UploadFile) => {
 };
 // 点击"选好了"按钮事件
 const saveImage = () => {
-  isButtonClicked.value = true;
   if (uploadFileList.value.length != 0) {
+    isLoading.value = true;
+    isButtonClicked.value = true;
     isLoading.value = true;
     const readyToSend = new FormData();
     // 添加需要的POST字段
@@ -311,8 +312,13 @@ const saveImage = () => {
     singleFIleSend.delete("files");
     // 获得图片处理进度
     getStateFromBackend();
-    // 按钮置为可用状态
-    isLoading.value = false;
+  } else {
+    ElMessage({
+      duration: 1500,
+      showClose: true,
+      message: "您还没有选择任何图片!",
+      grouping: true,
+    });
   }
 };
 
@@ -329,6 +335,7 @@ const getStateFromBackend = () => {
       percentage.value = parseInt(responseText);
     }
   };
+  // 设置定时获取进度
   let setIntervalTime: NodeJS.Timeout | null = setInterval(function () {
     xhrGetState.open("GET", urlGetState, false);
     xhrGetState.send(null);
@@ -337,14 +344,23 @@ const getStateFromBackend = () => {
       percentageText.value = "处理完成，请下滑查看结果";
       // 显示结果
       uploadFileListForShow.value = uploadFileList.value;
+      // 按钮置为可用状态
+      isLoading.value = false;
     }
   }, 500);
 };
 
-const showResult = (imageName: String) => {
+const showResult = (imageName: string) => {
   beforeImageUrl.value = "../../BackEnd/cache/image/" + imageName;
   afterImageUrl.value = "../../BackEnd/cache/result/" + imageName;
   dialogVisibleResult.value = true;
+};
+
+const saveResult = (imageName: string) => {
+  let cacheImageUrl = path.join("../../BackEnd/cache/result/", imageName);
+  let downloadUrl = path.join("../../download/", imageName);
+
+  console.log(downloadUrl);
 };
 </script>
 <style>
@@ -396,8 +412,14 @@ const showResult = (imageName: String) => {
 .after figcaption {
   right: 12px;
 }
+.image-contain {
+  width: 168px;
+  height: 168px;
+}
 .image {
   width: 100%;
+  height: 100%;
+  object-fit: contain;
   display: block;
 }
 .dark .el-dialog {
