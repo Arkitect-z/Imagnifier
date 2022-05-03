@@ -96,8 +96,24 @@ def get_setting():
     f.close()
     return setting_data
 
+
+# 保存处理结果
+@flask_app.route('/saveResult', methods=['POST'])
+def save_result():
+    source_url = os.getcwd() + request.form["sourceUrl"]
+    target_url = os.getcwd() + request.form["targetUrl"]
+    try:
+        shutil.copyfile(source_url, target_url)
+        return "成功保存到" + target_url
+    except IOError as e:
+        return "保存失败,缺少写入权限 %s" % e
+    except:
+        return "保存遇到未知错误", sys.exc_info()
+
 # flask活动的多线程
 
+def vue_thread():
+    os.system("npm run dev")
 
 def flask_thread():
     flask_app.run(debug=True, host='127.0.0.1', port=5000, use_reloader=False)
@@ -157,6 +173,9 @@ class MainWindow(QMainWindow):
 
 
 if __name__ == '__main__':
+    start_vue = threading.Thread(target=vue_thread)
+    start_vue.setDaemon(True)
+    start_vue.start()
     app = QApplication(sys.argv)
     # 创建一个主窗口
     mainWin = MainWindow()

@@ -187,21 +187,20 @@ import type { UploadFile } from "element-plus/es/components/upload/src/upload.ty
 import { ImgComparisonSlider } from "@img-comparison-slider/vue";
 import { reactive } from "vue";
 import "element-plus/theme-chalk/display.css";
-import axois from "axios";
-import axios from "axios";
+import path from "path";
 
-// 禁用右键与文字选中
-document.body.onselectstart = document.body.oncontextmenu = function () {
-  return false;
-};
-let options = [];
+const cacheImageUrl = ref("/BackEnd/cache/result/");
+const downloadUrl = ref("/download/");
+const options = ref([]);
 // 获得当前设置
 const xhrGetSetting = new XMLHttpRequest();
 const urlGetSetting = "http://127.0.0.1:5000/getSetting";
 xhrGetSetting.onreadystatechange = function () {
   if (xhrGetSetting.readyState == 4 && xhrGetSetting.status == 200) {
-    let responseText = xhrGetSetting.responseText;
-    options = JSON.parse(responseText).model;
+    let responseText = JSON.parse(xhrGetSetting.responseText);
+    options.value = responseText.model;
+    cacheImageUrl.value = responseText.path.cacheImageUrl;
+    downloadUrl.value = responseText.path.downloadUrl;
   }
 };
 xhrGetSetting.open("GET", urlGetSetting, false);
@@ -218,7 +217,8 @@ const uploadImage = (fileParams: any) => {
 };
 // 上传的文件字典
 const uploadFileList = ref([] as UploadFile[]);
-const uploadFileListForShow = ref([] as UploadFile[]);
+let uploadFileListForList = [] as UploadFile[];
+let uploadFileListForShow = ref([] as UploadFile[]);
 // 图片预览显示
 const dialogImageUrl = ref("");
 const dialogVisible = ref(false);
@@ -280,7 +280,7 @@ const saveImage = () => {
     isLoading.value = true;
     isButtonClicked.value = true;
     isLoading.value = true;
-    const readyToSend = new FormData();
+    let readyToSend = new FormData();
     // 添加需要的POST字段
     readyToSend.append("sendData", JSON.stringify(uploadFileList));
     readyToSend.append("form", JSON.stringify(form));
@@ -316,12 +316,13 @@ const saveImage = () => {
     ElMessage({
       duration: 1500,
       showClose: true,
-      message: "您还没有选择任何图片!",
+      message: "还没有选择任何图片!",
       grouping: true,
     });
   }
 };
 
+// 进度条进度
 const getStateFromBackend = () => {
   let responseText = "20";
   // 初始化XMLHttpRequest对象
@@ -343,24 +344,43 @@ const getStateFromBackend = () => {
       clearInterval(Number(setIntervalTime));
       percentageText.value = "处理完成，请下滑查看结果";
       // 显示结果
-      uploadFileListForShow.value = uploadFileList.value;
+      uploadFileListForList = uploadFileList.value;
+      uploadFileListForShow.value = uploadFileListForList;
       // 按钮置为可用状态
       isLoading.value = false;
     }
   }, 500);
 };
 
+// 处理结果展示
 const showResult = (imageName: string) => {
   beforeImageUrl.value = "../../BackEnd/cache/image/" + imageName;
   afterImageUrl.value = "../../BackEnd/cache/result/" + imageName;
   dialogVisibleResult.value = true;
 };
 
+// 保存处理结果
 const saveResult = (imageName: string) => {
-  let cacheImageUrl = path.join("../../BackEnd/cache/result/", imageName);
-  let downloadUrl = path.join("../../download/", imageName);
-
-  console.log(downloadUrl);
+  let sourceUrl = cacheImageUrl.value + imageName;
+  let targetUrl = downloadUrl.value + imageName;
+  let readyToSend = new FormData();
+  readyToSend.append("sourceUrl", sourceUrl);
+  readyToSend.append("targetUrl", targetUrl);
+  const xhrSaveResult = new XMLHttpRequest();
+  const urlSaveResult = "http://127.0.0.1:5000/saveResult";
+  xhrSaveResult.onreadystatechange = function () {
+    if (xhrSaveResult.readyState == 4 && xhrSaveResult.status == 200) {
+      let saveResultReturn = xhrSaveResult.responseText;
+      ElMessage({
+        duration: 3000,
+        showClose: true,
+        message: saveResultReturn,
+        grouping: true,
+      });
+    }
+  };
+  xhrSaveResult.open("POST", urlSaveResult, true);
+  xhrSaveResult.send(readyToSend);
 };
 </script>
 <style>

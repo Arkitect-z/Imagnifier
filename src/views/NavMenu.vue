@@ -35,7 +35,7 @@
               <el-icon><Box /></el-icon>
             </div>
             <template #title>
-              <span>模型列表</span>
+              <span>工作环境</span>
             </template>
           </el-menu-item>
           <el-menu-item index="/Setting" class="dark:hover:bg-gray-500">
@@ -78,6 +78,11 @@ import {
   Sunny,
   Moon,
 } from "@element-plus/icons-vue";
+
+// 禁用右键与文字选中
+document.body.onselectstart = document.body.oncontextmenu = function () {
+  return false;
+};
 
 const switchValtue = ref(false);
 

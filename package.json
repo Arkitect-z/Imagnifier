@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@img-comparison-slider/vue": "^7.4.3",
+    "downloadjs": "^1.4.7",
     "element-plus": "^2.0.2",
     "tilt.js": "^1.2.1",
     "vue": "^3.2.20",
