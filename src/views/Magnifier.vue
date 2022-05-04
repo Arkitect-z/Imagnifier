@@ -187,7 +187,6 @@ import type { UploadFile } from "element-plus/es/components/upload/src/upload.ty
 import { ImgComparisonSlider } from "@img-comparison-slider/vue";
 import { reactive } from "vue";
 import "element-plus/theme-chalk/display.css";
-import path from "path";
 
 const cacheImageUrl = ref("/BackEnd/cache/result/");
 const downloadUrl = ref("/download/");
