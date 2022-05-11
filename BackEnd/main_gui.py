@@ -24,6 +24,7 @@ ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("myappid")
 
 UPLOAD_FOLDER = os.getcwd() + '/BackEnd/cache/image'
 MAGNIFIED_FOLDER = os.getcwd() + '/BackEnd/cache/result/'
+CONFIG_FILE = os.getcwd() + "/BackEnd/setting.config.json"
 # 打开后端端口
 flask_app = Flask(__name__)
 
@@ -89,11 +90,12 @@ def get_percentage():
     return str(int(magnify_percentage))
 
 
+# 获取配置信息
 @flask_app.route('/getSetting', methods=['GET'])
 def get_setting():
-    with open(os.getcwd() + "/BackEnd/setting.config.json", "r", encoding="utf-8") as f:
+    setting_data = ""
+    with open(CONFIG_FILE, "r", encoding="utf-8") as f:
         setting_data = json.load(f)
-    f.close()
     return setting_data
 
 
@@ -113,7 +115,15 @@ def save_result():
 # flask活动的多线程
 
 def vue_thread():
-    os.system("npm run dev")
+    setting_data = ""
+    with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+        setting_data = json.load(f)
+        if not setting_data["path"]["pathRevised"]:
+            setting_data["path"]["downloadUrl"] = os.getcwd() + "/download/"
+            setting_data["path"]["pathRevised"] = True
+    with open(CONFIG_FILE, "w", encoding="utf-8") as f:
+        json.dump(setting_data, f)
+    # os.system("npm run dev")
 
 def flask_thread():
     flask_app.run(debug=True, host='127.0.0.1', port=5000, use_reloader=False)
@@ -123,9 +133,9 @@ def flask_thread():
 
 def clear_cache_thread():
     # 上传文件夹
-    cache_file_path = os.getcwd() + "/BackEnd/cache/image/"
+    cache_file_path = UPLOAD_FOLDER
     # 处理结果文件夹
-    cache_result_path = os.getcwd() + "/BackEnd/cache/result/"
+    cache_result_path = MAGNIFIED_FOLDER
     if os.path.exists(cache_file_path):
         shutil.rmtree(cache_file_path)
     if os.path.exists(cache_result_path):

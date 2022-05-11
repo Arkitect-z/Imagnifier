@@ -4,7 +4,6 @@ import NonePage from '../views/404.vue'
 import Guidance from '../views/Guidance.vue'
 import Apps from '../views/Apps.vue'
 import Setting from '../views/Setting.vue'
-import Waifu2x from '../views/Waifu2x-View.vue'
 import Magnifier from '../views/Magnifier.vue'
 
 const routes: RouteRecordRaw[] = [
@@ -24,10 +23,6 @@ const routes: RouteRecordRaw[] = [
             {
                 path: '/Setting',
                 component: Setting,
-            },
-            {
-                path: '/Waifu2x',
-                component: Waifu2x,
             },
             {
                 path: '/Magnifier',

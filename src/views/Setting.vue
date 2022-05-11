@@ -1,15 +1,33 @@
 <template>
-  <div class="p-12">
+  <div class="px-12 py-2">
+    <h2>放大结果保存位置</h2>
+    <div class="mt-4">
+      <el-input v-model="saveLocation" placeholder="Please input">
+        <template #append>
+          <el-button :icon="Check" @click="saveLocationFolder" />
+        </template>
+      </el-input>
+    </div>
     <h2>模型库</h2>
     <h3>在此处管理本地的模型</h3>
     <p>Waifu2x</p>
     <el-row :gutter="12">
       <el-col :span="8">
-        <el-card shadow="hover" class="model" :body-style="{ padding: '20px 10px' }">
-          <span class="modelName">{{options[0].label}}</span>
-          <div style="float: right;">
-          <el-button :icon="Download" circle></el-button>
-          <el-button type="danger" :icon="Delete" :disabled="options[0].disabled" circle  plain/>
+        <el-card
+          shadow="hover"
+          class="model"
+          :body-style="{ padding: '20px 10px' }"
+        >
+          <span class="modelName">{{ options.model[0].label }}</span>
+          <div style="float: right">
+            <el-button :icon="Download" circle></el-button>
+            <el-button
+              type="danger"
+              :icon="Delete"
+              :disabled="options.model[0].children[0].disabled"
+              circle
+              plain
+            />
           </div>
         </el-card>
       </el-col>
@@ -17,29 +35,93 @@
     <p>RealESRGAN</p>
     <el-row :gutter="12">
       <el-col :span="8">
-        <el-card shadow="hover" class="model" :body-style="{ padding: '20px 10px' }">
-          <span class="modelName break-normal">{{options[1].children[0].label}}</span>
-          <div style="float: right;">
-          <el-button :icon="Download" circle></el-button>
-          <el-button type="danger" :icon="Delete" style="text-align: right;" :disabled="options[1].children[0].disabled" circle  plain/>
+        <el-card
+          shadow="hover"
+          class="model"
+          :body-style="{ padding: '20px 10px' }"
+        >
+          <span class="modelName break-normal">{{
+            options.model[1].children[0].label
+          }}</span>
+          <div style="float: right">
+            <el-button :icon="Download" circle></el-button>
+            <el-button
+              type="danger"
+              :icon="Delete"
+              style="text-align: right"
+              :disabled="options.model[1].children[0].disabled"
+              circle
+              plain
+            />
           </div>
         </el-card>
       </el-col>
       <el-col :span="8">
-        <el-card shadow="hover" class="model" :body-style="{ padding: '20px 10px' }">
-          <span class="modelName break-normal">{{options[1].children[1].label}}</span>
-          <div style="float: right;">
-          <el-button :icon="Download" circle></el-button>
-          <el-button type="danger" :icon="Delete" style="text-align: right;" :disabled="options[1].children[1].disabled" circle  plain/>
+        <el-card
+          shadow="hover"
+          class="model"
+          :body-style="{ padding: '20px 10px' }"
+        >
+          <span class="modelName break-normal">{{
+            options.model[1].children[1].label
+          }}</span>
+          <div style="float: right">
+            <el-button :icon="Download" circle></el-button>
+            <el-button
+              type="danger"
+              :icon="Delete"
+              style="text-align: right"
+              :disabled="options.model[1].children[1].disabled"
+              circle
+              plain
+            />
           </div>
         </el-card>
       </el-col>
       <el-col :span="8">
-        <el-card shadow="hover" class="model" :body-style="{ padding: '20px 10px' }">
-          <span class="modelName break-normal">{{options[1].children[2].label}}</span>
-          <div style="float: right;">
-          <el-button :icon="Download" circle></el-button>
-          <el-button type="danger" :icon="Delete" style="text-align: right;" :disabled="options[1].children[2].disabled" circle  plain/>
+        <el-card
+          shadow="hover"
+          class="model"
+          :body-style="{ padding: '20px 10px' }"
+        >
+          <span class="modelName break-normal">{{
+            options.model[1].children[2].label
+          }}</span>
+          <div style="float: right">
+            <el-button :icon="Download" circle></el-button>
+            <el-button
+              type="danger"
+              :icon="Delete"
+              style="text-align: right"
+              :disabled="options.model[1].children[2].disabled"
+              circle
+              plain
+            />
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
+    <p>Bilibili</p>
+    <el-row :gutter="12">
+      <el-col :span="8">
+        <el-card
+          shadow="hover"
+          class="model"
+          :body-style="{ padding: '20px 10px' }"
+        >
+          <span class="modelName break-normal">{{
+            options.model[2].children[0].label
+          }}</span>
+          <div style="float: right">
+            <el-button :icon="Download" circle></el-button>
+            <el-button
+              type="danger"
+              :icon="Delete"
+              style="text-align: right"
+              :disabled="options.model[2].children[0].disabled"
+              circle
+              plain
+            />
           </div>
         </el-card>
       </el-col>
@@ -48,22 +130,28 @@
 </template>
 
 <script setup lang="ts">
-import { Download, Delete } from "@element-plus/icons-vue";
+import { Download, Delete, Check } from "@element-plus/icons-vue";
 import { ref } from "vue";
 
+const saveLocation = ref("");
+
 const downloadProcess = ref("");
-const options = ref([]);
+const options = ref();
 // 获得当前设置
 const xhrGetSetting = new XMLHttpRequest();
 const urlGetSetting = "http://127.0.0.1:5000/getSetting";
 xhrGetSetting.onreadystatechange = function () {
   if (xhrGetSetting.readyState == 4 && xhrGetSetting.status == 200) {
     let responseText = JSON.parse(xhrGetSetting.responseText);
-    options.value = responseText.model;
+    options.value = responseText;
   }
 };
 xhrGetSetting.open("GET", urlGetSetting, false);
 xhrGetSetting.send(null);
+saveLocation.value = options.value.path.downloadUrl;
+const saveLocationFolder = () => {
+  
+};
 </script>
 
 <style scoped>
@@ -74,7 +162,7 @@ h2 {
   display: flex;
   align-items: center;
   position: relative;
-  margin-top: 1rem;
+  margin-top: 2rem;
   padding-bottom: 0.75rem;
   line-height: 1.25;
   font-size: 1.65rem;
@@ -96,7 +184,7 @@ p {
   width: 100%;
   display: block;
 }
-.modelName{
+.modelName {
   align-items: center;
   text-align: left;
 }
