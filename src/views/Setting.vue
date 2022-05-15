@@ -4,7 +4,7 @@
     <div class="mt-4">
       <el-input v-model="saveLocation" placeholder="Please input">
         <template #append>
-          <el-button :icon="Check" @click="saveLocationFolder" />
+          <el-button :icon="Edit" @click="saveLocationFolder" />
         </template>
       </el-input>
     </div>
@@ -130,7 +130,7 @@
 </template>
 
 <script setup lang="ts">
-import { Download, Delete, Check } from "@element-plus/icons-vue";
+import { Download, Delete, Edit } from "@element-plus/icons-vue";
 import { ref } from "vue";
 
 const saveLocation = ref("");
@@ -150,7 +150,15 @@ xhrGetSetting.open("GET", urlGetSetting, false);
 xhrGetSetting.send(null);
 saveLocation.value = options.value.path.downloadUrl;
 const saveLocationFolder = () => {
-  
+  const xhrSaveLocation = new XMLHttpRequest();
+  const urlSaveLocation = "http://127.0.0.1:5000/setSaveLocation";
+  xhrSaveLocation.onreadystatechange = function () {
+    if (xhrSaveLocation.readyState == 4 && xhrSaveLocation.status == 200) {
+      saveLocation.value = xhrSaveLocation.responseText;
+    }
+  };
+  xhrSaveLocation.open("GET", urlSaveLocation, false);
+  xhrSaveLocation.send(null);
 };
 </script>
 

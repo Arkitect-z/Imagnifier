@@ -8,7 +8,7 @@ import json
 # 导入QT
 from PyQt5.QtCore import QUrl
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 
 # 导入flask
@@ -112,15 +112,28 @@ def save_result():
     except:
         return "保存遇到未知错误", sys.exc_info()
 
-# flask活动的多线程
 
+# 设置-保存文件位置
+@flask_app.route('/setSaveLocation', methods=['GET'])
+def set_save_location():
+    setting_data = ""
+    save_loaction = QFileDialog.getExistingDirectory(None, "选取文件夹", "*")
+    with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+        setting_data = json.load(f)
+        setting_data["path"]["downloadUrl"] = save_loaction
+        setting_data["path"]["pathRevised"] = True
+    with open(CONFIG_FILE, "w", encoding="utf-8") as f:
+        json.dump(setting_data, f)
+    return str(save_loaction)
+
+
+# flask活动的多线程
 def vue_thread():
     setting_data = ""
     with open(CONFIG_FILE, "r", encoding="utf-8") as f:
         setting_data = json.load(f)
         if not setting_data["path"]["pathRevised"]:
             setting_data["path"]["downloadUrl"] = os.getcwd() + "/download/"
-            setting_data["path"]["pathRevised"] = True
     with open(CONFIG_FILE, "w", encoding="utf-8") as f:
         json.dump(setting_data, f)
     # os.system("npm run dev")
