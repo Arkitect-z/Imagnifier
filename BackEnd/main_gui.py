@@ -31,9 +31,7 @@ flask_app = Flask(__name__)
 # 支持跨域访问
 CORS(flask_app, supports_credentials=True)
 
-# 用于接收上传文件数据,button事件
-
-
+# 用于接收上传文件数据,button事件 
 @flask_app.route('/action', methods=['POST'])
 def chosen_file():
     # 放大功能进度条的数值
@@ -62,9 +60,8 @@ def chosen_file():
             magnifier.start()
     return "For Get Chosen File!"
 
+
 # 用于接收上传文件数据,upload事件
-
-
 @flask_app.route('/upload', methods=['POST'])
 def upload_file():
     global magnify_percentage
@@ -78,9 +75,8 @@ def upload_file():
             each_file.save(os.path.join(UPLOAD_FOLDER, each_file.filename))
     return "For Upload!"
 
+
 # 前端获取后端处理状态
-
-
 @flask_app.route('/state', methods=['GET'])
 def get_percentage():
     global magnify_percentage
@@ -93,17 +89,16 @@ def get_percentage():
 # 获取配置信息
 @flask_app.route('/getSetting', methods=['GET'])
 def get_setting():
-    setting_data = ""
-    with open(CONFIG_FILE, "r", encoding="utf-8") as f:
-        setting_data = json.load(f)
+    global setting_data
     return setting_data
 
 
 # 保存处理结果
 @flask_app.route('/saveResult', methods=['POST'])
 def save_result():
-    source_url = os.getcwd() + request.form["sourceUrl"]
-    target_url = os.getcwd() + request.form["targetUrl"]
+    global setting_data
+    source_url = MAGNIFIED_FOLDER + request.form["imageName"]
+    target_url = setting_data["path"]["downloadUrl"] + request.form["imageName"]
     try:
         shutil.copyfile(source_url, target_url)
         return "成功保存到" + target_url
@@ -116,20 +111,19 @@ def save_result():
 # 设置-保存文件位置
 @flask_app.route('/setSaveLocation', methods=['GET'])
 def set_save_location():
-    setting_data = ""
-    save_loaction = QFileDialog.getExistingDirectory(None, "选取文件夹", "*")
-    with open(CONFIG_FILE, "r", encoding="utf-8") as f:
-        setting_data = json.load(f)
-        setting_data["path"]["downloadUrl"] = save_loaction
-        setting_data["path"]["pathRevised"] = True
+    global setting_data
+    save_loaction = QFileDialog.getExistingDirectory(
+        None, "选取文件夹", setting_data["path"]["downloadUrl"])
+    setting_data["path"]["downloadUrl"] = save_loaction + "/"
+    setting_data["path"]["pathRevised"] = True
     with open(CONFIG_FILE, "w", encoding="utf-8") as f:
         json.dump(setting_data, f)
-    return str(save_loaction)
+    return str(setting_data["path"]["downloadUrl"])
 
 
 # flask活动的多线程
 def vue_thread():
-    setting_data = ""
+    global setting_data
     with open(CONFIG_FILE, "r", encoding="utf-8") as f:
         setting_data = json.load(f)
         if not setting_data["path"]["pathRevised"]:
@@ -138,12 +132,12 @@ def vue_thread():
         json.dump(setting_data, f)
     # os.system("npm run dev")
 
+
 def flask_thread():
     flask_app.run(debug=True, host='127.0.0.1', port=5000, use_reloader=False)
 
+
 # 清理cache的多线程
-
-
 def clear_cache_thread():
     # 上传文件夹
     cache_file_path = UPLOAD_FOLDER

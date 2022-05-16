@@ -15,19 +15,30 @@
       <el-col :span="8">
         <el-card
           shadow="hover"
-          class="model"
-          :body-style="{ padding: '20px 10px' }"
+          :body-style="{ padding: '20px 10px', height: '64px' }"
         >
-          <span class="modelName">{{ options.model[0].label }}</span>
-          <div style="float: right">
-            <el-button :icon="Download" circle></el-button>
-            <el-button
-              type="danger"
-              :icon="Delete"
-              :disabled="options.model[0].children[0].disabled"
-              circle
-              plain
-            />
+          <div class="container">
+            <div class="modelName w-40">
+              <el-scrollbar height="24px">
+                <span class="break-normal">{{
+                  options.model[0].children[0].label
+                }}</span></el-scrollbar
+              >
+            </div>
+            <div class="blank"></div>
+            <div class="buttonDownload">
+              <el-button :icon="Download" circle></el-button>
+            </div>
+            <div class="buttonDelete">
+              <el-button
+                type="danger"
+                :icon="Delete"
+                style="text-align: right"
+                :disabled="options.model[0].children[0].disabled"
+                circle
+                plain
+              />
+            </div>
           </div>
         </el-card>
       </el-col>
@@ -37,66 +48,90 @@
       <el-col :span="8">
         <el-card
           shadow="hover"
-          class="model"
-          :body-style="{ padding: '20px 10px' }"
+          :body-style="{ padding: '20px 10px', height: '64px' }"
         >
-          <span class="modelName break-normal">{{
-            options.model[1].children[0].label
-          }}</span>
-          <div style="float: right">
-            <el-button :icon="Download" circle></el-button>
-            <el-button
-              type="danger"
-              :icon="Delete"
-              style="text-align: right"
-              :disabled="options.model[1].children[0].disabled"
-              circle
-              plain
-            />
+          <div class="container">
+            <div class="modelName w-40">
+              <el-scrollbar height="24px">
+                <span class="break-normal">{{
+                  options.model[1].children[0].label
+                }}</span></el-scrollbar
+              >
+            </div>
+            <div class="blank"></div>
+            <div class="buttonDownload">
+              <el-button :icon="Download" circle></el-button>
+            </div>
+            <div class="buttonDelete">
+              <el-button
+                type="danger"
+                :icon="Delete"
+                style="text-align: right"
+                :disabled="options.model[1].children[0].disabled"
+                circle
+                plain
+              />
+            </div>
           </div>
         </el-card>
       </el-col>
       <el-col :span="8">
         <el-card
           shadow="hover"
-          class="model"
-          :body-style="{ padding: '20px 10px' }"
+          :body-style="{ padding: '20px 10px', height: '64px' }"
         >
-          <span class="modelName break-normal">{{
-            options.model[1].children[1].label
-          }}</span>
-          <div style="float: right">
-            <el-button :icon="Download" circle></el-button>
-            <el-button
-              type="danger"
-              :icon="Delete"
-              style="text-align: right"
-              :disabled="options.model[1].children[1].disabled"
-              circle
-              plain
-            />
+          <div class="container">
+            <div class="modelName w-40">
+              <el-scrollbar height="24px">
+                <span class="break-normal">{{
+                  options.model[1].children[1].label
+                }}</span></el-scrollbar
+              >
+            </div>
+            <div class="blank"></div>
+            <div class="buttonDownload">
+              <el-button :icon="Download" circle></el-button>
+            </div>
+            <div class="buttonDelete">
+              <el-button
+                type="danger"
+                :icon="Delete"
+                style="text-align: right"
+                :disabled="options.model[1].children[1].disabled"
+                circle
+                plain
+              />
+            </div>
           </div>
         </el-card>
       </el-col>
       <el-col :span="8">
         <el-card
           shadow="hover"
-          class="model"
-          :body-style="{ padding: '20px 10px' }"
+          :body-style="{ padding: '20px 10px', height: '64px' }"
         >
-          <span class="modelName break-normal">{{
-            options.model[1].children[2].label
-          }}</span>
-          <div style="float: right">
-            <el-button :icon="Download" circle></el-button>
-            <el-button
-              type="danger"
-              :icon="Delete"
-              style="text-align: right"
-              :disabled="options.model[1].children[2].disabled"
-              circle
-              plain
-            />
+          <div class="container">
+            <div class="modelName w-40">
+              <el-scrollbar height="24px">
+                <span class="break-normal">{{
+                  options.model[1].children[2].label
+                }}</span></el-scrollbar
+              >
+            </div>
+            <div class="blank"></div>
+            <div class="buttonDownload">
+              <el-button :icon="Download" circle></el-button>
+            </div>
+            <div class="buttonDelete">
+              <el-button
+                type="danger"
+                :icon="Delete"
+                style="text-align: right"
+                :disabled="options.model[1].children[2].disabled"
+                circle
+                plain
+              />
+            </div>
           </div>
         </el-card>
       </el-col>
@@ -106,22 +141,30 @@
       <el-col :span="8">
         <el-card
           shadow="hover"
-          class="model"
-          :body-style="{ padding: '20px 10px' }"
+          :body-style="{ padding: '20px 10px', height: '64px' }"
         >
-          <span class="modelName break-normal">{{
-            options.model[2].children[0].label
-          }}</span>
-          <div style="float: right">
-            <el-button :icon="Download" circle></el-button>
-            <el-button
-              type="danger"
-              :icon="Delete"
-              style="text-align: right"
-              :disabled="options.model[2].children[0].disabled"
-              circle
-              plain
-            />
+          <div class="container">
+            <div class="modelName w-40">
+              <el-scrollbar height="24px">
+                <span class="break-normal">{{
+                  options.model[2].children[0].label
+                }}</span></el-scrollbar
+              >
+            </div>
+            <div class="blank"></div>
+            <div class="buttonDownload">
+              <el-button :icon="Download" circle></el-button>
+            </div>
+            <div class="buttonDelete">
+              <el-button
+                type="danger"
+                :icon="Delete"
+                style="text-align: right"
+                :disabled="options.model[2].children[0].disabled"
+                circle
+                plain
+              />
+            </div>
           </div>
         </el-card>
       </el-col>
@@ -188,14 +231,31 @@ p {
   margin-top: 1rem;
   margin-bottom: 0.6rem;
 }
-.model {
-  width: 100%;
-  display: block;
+.container {
+  display: grid;
+  grid-template-columns: 1.3fr 0.4fr 0.4fr 0.4fr;
+  grid-template-rows: 1fr;
+  gap: 0px 0px;
+  grid-auto-flow: column;
+  grid-template-areas: "modelName blank buttonDownload buttonDelete";
 }
+
+.buttonDownload {
+  grid-area: buttonDownload;
+}
+
+.buttonDelete {
+  grid-area: buttonDelete;
+}
+
+.blank {
+  grid-area: blank;
+}
+
 .modelName {
-  align-items: center;
-  text-align: left;
+  grid-area: modelName;
 }
+
 .dark .model {
   background-color: #4b5563;
 }

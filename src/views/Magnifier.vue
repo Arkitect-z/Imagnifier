@@ -360,11 +360,8 @@ const showResult = (imageName: string) => {
 
 // 保存处理结果
 const saveResult = (imageName: string) => {
-  let sourceUrl = cacheImageUrl.value + imageName;
-  let targetUrl = downloadUrl.value + imageName;
   let readyToSend = new FormData();
-  readyToSend.append("sourceUrl", sourceUrl);
-  readyToSend.append("targetUrl", targetUrl);
+  readyToSend.append("imageName", imageName);
   const xhrSaveResult = new XMLHttpRequest();
   const urlSaveResult = "http://127.0.0.1:5000/saveResult";
   xhrSaveResult.onreadystatechange = function () {
