@@ -1,5 +1,12 @@
 <template>
     <div>
-        <h1 class="text-gray-900 dark:text-white text-3xl font-bold">yes!!!</h1>
+        <iframe src="./Guidance.html" width="100%" frameborder="0"></iframe>
     </div>
 </template>
+
+<script lang="ts">
+import { ref } from "vue";
+
+const iframeSrc = "/Guidance.html";
+</script>
+

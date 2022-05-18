@@ -35,7 +35,7 @@
               <el-icon><Box /></el-icon>
             </div>
             <template #title>
-              <span>工作环境</span>
+              <span>工作台</span>
             </template>
           </el-menu-item>
           <el-menu-item index="/Setting" class="dark:hover:bg-gray-500">

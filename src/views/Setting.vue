@@ -256,7 +256,7 @@ p {
   grid-area: modelName;
 }
 
-.dark .model {
+.dark .el-card {
   background-color: #4b5563;
 }
 </style>

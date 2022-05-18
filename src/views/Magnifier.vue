@@ -354,14 +354,14 @@ const getStateFromBackend = () => {
 // 处理结果展示
 const showResult = (imageName: string) => {
   beforeImageUrl.value = "../../BackEnd/cache/image/" + imageName;
-  afterImageUrl.value = "../../BackEnd/cache/result/" + imageName;
+  afterImageUrl.value = "../../BackEnd/cache/result/" + imageName.split(".")[0] + "." + form.out_ext;
   dialogVisibleResult.value = true;
 };
 
 // 保存处理结果
 const saveResult = (imageName: string) => {
   let readyToSend = new FormData();
-  readyToSend.append("imageName", imageName);
+  readyToSend.append("imageName", imageName.split(".")[0] + "." + form.out_ext);
   const xhrSaveResult = new XMLHttpRequest();
   const urlSaveResult = "http://127.0.0.1:5000/saveResult";
   xhrSaveResult.onreadystatechange = function () {
