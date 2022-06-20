@@ -2,7 +2,7 @@
 
 # Imagnifier
 > 一个集成 Vue 3 + Vite 2 + Vue-Router 4 + Vuex 4 + TailWindCss + TypeScript + ESLint 等框架与组件的动漫图片放大器的应用实现
-> 后端采用Flask作为服务框架，PyQt作为前后端的承载，使用[ESRGAN](https://github.com/xinntao/Real-ESRGAN)预训练的模型进行图片清晰化操作
+> 后端采用Flask作为服务框架，PyQt作为前后端的承载，使用[Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN)预训练的模型进行图片清晰化操作
 
 ## 技术栈
 
@@ -18,9 +18,11 @@
 ## 演示视频
 
 图片选择与查看
+
 https://user-images.githubusercontent.com/53122135/174570743-8fa41e49-e309-4ece-a2d0-7319f8956ecb.mp4
 
 图片处理与对比结果
+
 https://user-images.githubusercontent.com/53122135/174571635-cba8f875-3d3f-4f66-b3d8-1f0163a52dc1.mp4
 
 ## Project setup
