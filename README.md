@@ -18,8 +18,8 @@
 - 服务与通信框架：[Flask](https://github.com/pallets/flask/)
 - 界面框架：[PyQt5](https://github.com/PyQt5/PyQt/)
 - 神经网络框架：[PyTorch](https://github.com/pytorch/pytorch/)
-- 使用模型来源：[Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN)
-               [bilibili](https://github.com/bilibili/ailab) 
+- 使用模型来源：[Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN)   
+               [bilibili](https://github.com/bilibili/ailab)    
                [waifu2x-chainer](https://github.com/tsurumeso/waifu2x-chainer)
 
 ## 演示视频
