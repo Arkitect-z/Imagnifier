@@ -31,12 +31,14 @@ https://user-images.githubusercontent.com/53122135/174570743-8fa41e49-e309-4ece-
 
 https://user-images.githubusercontent.com/53122135/174571635-cba8f875-3d3f-4f66-b3d8-1f0163a52dc1.mp4
 
-## Project setup
+
+## Project setup 
+## 项目启动
 
 ```bash
 npm install
 ```
-
+将[Real-ESRGAN模型库](https://github.com/xinntao/Real-ESRGAN/blob/master/docs/model_zoo.md)下载的模型放入"\BackEnd\experiments\pretrained_models"目录下
 ### Compiles and hot-reloads for development
 
 ```bash
@@ -47,13 +49,4 @@ npm run dev
 
 ```bash
 npm run build
-```
-
-## Usage
-
-```bash
-git clone https://github.com/Arkitect-z/Imagnifier.git
-cd Imagnifier
-npm i
-npm run dev
 ```
