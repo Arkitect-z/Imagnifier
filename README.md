@@ -14,6 +14,14 @@
 - CSS 组件：[TailWindCss](https://www.tailwindcss.cn/) / [Sass](https://sass.bootcss.com/documentation)
 - 代码规范：[ESLint](https://eslint.org/)
 
+## 演示视频
+
+图片选择与查看
+https://user-images.githubusercontent.com/53122135/174570743-8fa41e49-e309-4ece-a2d0-7319f8956ecb.mp4
+
+图片处理与对比结果
+https://user-images.githubusercontent.com/53122135/174571635-cba8f875-3d3f-4f66-b3d8-1f0163a52dc1.mp4
+
 ## Project setup
 
 ```bash
