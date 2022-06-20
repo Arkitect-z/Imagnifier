@@ -164,7 +164,7 @@
       </el-row>
       <el-dialog v-model="dialogVisibleResult">
         <el-scrollbar height="400px" style="max-heigt: 400px">
-          <ImgComparisonSlider class="image_compare m-6 self-stretch">
+          <ImgComparisonSlider class="image_compare m-6 self-stretch" :v-if="dialogVisibleResult">
             <figure slot="first" class="before">
               <img style="width: 100%" :src="beforeImageUrl" />
               <figcaption>Before</figcaption>
@@ -276,6 +276,8 @@ const handlePictureCardPreview = (file: UploadFile) => {
 // 点击"选好了"按钮事件
 const saveImage = () => {
   if (uploadFileList.value.length != 0) {
+    afterImageUrl.value = "";
+    dialogVisibleResult.value = false;
     isLoading.value = true;
     isButtonClicked.value = true;
     isLoading.value = true;
@@ -323,7 +325,7 @@ const saveImage = () => {
 
 // 进度条进度
 const getStateFromBackend = () => {
-  let responseText = "20";
+  let percentageNumber = "20";
   // 初始化XMLHttpRequest对象
   const xhrGetState = new XMLHttpRequest();
   // 设置请求响应的URL，此处为点击"选好了"按钮时的请求
@@ -331,15 +333,15 @@ const getStateFromBackend = () => {
   xhrGetState.onreadystatechange = function () {
     //服务器返回值的处理函数，此处使用匿名函数进行实现
     if (xhrGetState.readyState == 4 && xhrGetState.status == 200) {
-      responseText = xhrGetState.responseText;
-      percentage.value = parseInt(responseText);
+      percentageNumber = xhrGetState.responseText;
+      percentage.value = parseInt(percentageNumber);
     }
   };
   // 设置定时获取进度
   let setIntervalTime: NodeJS.Timeout | null = setInterval(function () {
     xhrGetState.open("GET", urlGetState, false);
     xhrGetState.send(null);
-    if (parseInt(responseText) == 100) {
+    if (parseInt(percentageNumber) == 100) {
       clearInterval(Number(setIntervalTime));
       percentageText.value = "处理完成，请下滑查看结果";
       // 显示结果

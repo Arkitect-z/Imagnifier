@@ -31,7 +31,7 @@ def prepare_model(parser):
     elif args['model_name'] in ['RealESRGAN_x4plus_anime_6B']:  # x4 RRDBNet model with 6 blocks
         model = RRDBNet(num_in_ch=3, num_out_ch=3, num_feat=64, num_block=6, num_grow_ch=32, scale=4)
         netscale = 4
-    elif args['model_name'] in ['RealESRGAN_x2plus']:  # x2 RRDBNet model
+    elif args['model_name'] in ['SelfTrained']:  # SelfTrained model
         model = RRDBNet(num_in_ch=3, num_out_ch=3, num_feat=64, num_block=23, num_grow_ch=32, scale=2)
         netscale = 2
     elif args['model_name'] in [
@@ -46,9 +46,9 @@ def prepare_model(parser):
         netscale = 4
 
     # determine model paths  os.getcwd() + 
-    model_path = os.path.join('D:\PythonProjects\Imagnifier\python\experiments/pretrained_models', args['model_name'] + '.pth')
+    model_path = os.path.join(os.getcwd() + '/BackEnd/experiments/pretrained_models', args['model_name'] + '.pth')
     if not os.path.isfile(model_path):
-        model_path = os.path.join('D:\PythonProjects\Imagnifier\python/realesrgan/weights', args['model_name'] + '.pth')
+        model_path = os.path.join(os.getcwd() + '/BackEnd/realesrgan/weights', args['model_name'] + '.pth')
     if not os.path.isfile(model_path):
         raise ValueError(f"Model {args['model_name']} does not exist.")
 
@@ -68,7 +68,7 @@ def prepare_model(parser):
     if args['face_enhance']:  # Use GFPGAN for face enhancement
         from gfpgan import GFPGANer
         face_enhancer = GFPGANer(
-            model_path='D:\PythonProjects\Imagnifier\python/experiments/face_enhancer/GFPGANCleanv1-NoCE-C2.pth',
+            model_path=os.getcwd() + '/BackEnd/experiments/face_enhancer/GFPGANCleanv1-NoCE-C2.pth',
             upscale=4,
             arch='clean',
             channel_multiplier=2,

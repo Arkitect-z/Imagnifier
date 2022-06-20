@@ -1,3 +1,14 @@
+*.pyc
+*.caffemodel
+*.prototxt
+*.onnx
+
+/*.bat
+/*.sh
+/*.npz
+/*.png
+/*.jpg
+/*.webp
 node_modules
 .DS_Store
 dist

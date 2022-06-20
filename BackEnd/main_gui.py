@@ -17,6 +17,10 @@ from flask_cors import CORS
 
 # 导入放大器
 import inference_realesrgan as realesrgan
+import experiments.waifu2x_chainer.waifu2x as waifu2x
+
+# 导入下载组件
+import wget
 
 # 设置任务栏图标
 import ctypes
@@ -25,13 +29,22 @@ ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("myappid")
 UPLOAD_FOLDER = os.getcwd() + '/BackEnd/cache/image'
 MAGNIFIED_FOLDER = os.getcwd() + '/BackEnd/cache/result/'
 CONFIG_FILE = os.getcwd() + "/BackEnd/setting.config.json"
+MODEL_FOLDER = os.getcwd() + "/BackEnd/models"
+
+# 模型链接
+url_RealESRGAN_x4plus = "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.0/RealESRGAN_x4plus.pth"
+url_RealESRNet_x4plus = "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.1/RealESRNet_x4plus.pth"
+url_RealESRGAN_x4plus_anime_6B = "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.2.4/RealESRGAN_x4plus_anime_6B.pth"
+
 # 打开后端端口
 flask_app = Flask(__name__)
 
 # 支持跨域访问
 CORS(flask_app, supports_credentials=True)
 
-# 用于接收上传文件数据,button事件 
+# 用于接收上传文件数据,button事件
+
+
 @flask_app.route('/action', methods=['POST'])
 def chosen_file():
     # 放大功能进度条的数值
@@ -48,7 +61,7 @@ def chosen_file():
         # 文件列表长度
         file_list_length = len(file_list)
         # 每处理完一个文件，进度条前进数量
-        each_percentage = 80 / file_list_length
+        each_percentage = 80.0 / file_list_length
         for each_file in file_list:
             file_name = os.path.join(UPLOAD_FOLDER, each_file.get("name"))
             # 设置多线程，防止与主界面相互干扰
@@ -75,13 +88,56 @@ def upload_file():
             each_file.save(os.path.join(UPLOAD_FOLDER, each_file.filename))
     return "For Upload!"
 
+# 下载功能
+@flask_app.route('/manageField', methods=['POST'])
+def manage_model():
+    global setting_data
+    global manage_state
+    manage_state = False
+    manageOperate = request.form["manageOperate"]
+    modelName = request.form["modelName"]
+    if manageOperate == '"download"':
+        if modelName == '"Waifu2x"':
+            setting_data["model"][0]["children"][0]["disabled"] = False
+        elif modelName == '"RealESRGAN_x4plus"':
+            setting_data["model"][1]["children"][0]["disabled"] = False
+        elif modelName == '"RealESRNet_x4plus"':
+            setting_data["model"][1]["children"][1]["disabled"] = False
+        elif modelName == '"RealESRGAN_x4plus_anime_6B"':
+            setting_data["model"][1]["children"][2]["disabled"] = False
+        elif modelName == '"Real_CUGAN"':
+            setting_data["model"][2]["children"][0]["disabled"] = False
+    else:
+        if modelName == '"Waifu2x"':
+            setting_data["model"][0]["children"][0]["disabled"] = True
+        elif modelName == '"RealESRGAN_x4plus"':
+            setting_data["model"][1]["children"][0]["disabled"] = True
+        elif modelName == '"RealESRNet_x4plus"':
+            setting_data["model"][1]["children"][1]["disabled"] = True
+        elif modelName == '"RealESRGAN_x4plus_anime_6B"':
+            setting_data["model"][1]["children"][2]["disabled"] = True
+        elif modelName == '"Real_CUGAN"':
+            setting_data["model"][2]["children"][0]["disabled"] = True
+    with open(CONFIG_FILE, "w", encoding="utf-8") as f:
+        json.dump(setting_data, f)
+    manage_state = True
+    return "For Download!"
+
+# 返回下载结果
+@flask_app.route('/manageResult', methods=['GET'])
+def manage_result():
+    global manage_state
+    if manage_state:
+        return "done"
+    else:
+        return "no"
 
 # 前端获取后端处理状态
 @flask_app.route('/state', methods=['GET'])
 def get_percentage():
     global magnify_percentage
     # 防止进度条溢出
-    if magnify_percentage > 100:
+    if magnify_percentage > 99:
         magnify_percentage = 100
     return str(int(magnify_percentage))
 
@@ -98,7 +154,8 @@ def get_setting():
 def save_result():
     global setting_data
     source_url = MAGNIFIED_FOLDER + request.form["imageName"]
-    target_url = setting_data["path"]["downloadUrl"] + request.form["imageName"]
+    target_url = setting_data["path"]["downloadUrl"] + \
+        request.form["imageName"]
     try:
         shutil.copyfile(source_url, target_url)
         return "成功保存到" + target_url
@@ -130,7 +187,7 @@ def vue_thread():
             setting_data["path"]["downloadUrl"] = os.getcwd() + "/download/"
     with open(CONFIG_FILE, "w", encoding="utf-8") as f:
         json.dump(setting_data, f)
-    # os.system("npm run dev")
+    os.system("npm run dev")
 
 
 def flask_thread():
@@ -160,8 +217,12 @@ def image_magnifier(file_name, each_percentage, form_data):
         'half': True,
         'extension': form_data["out_ext"]
     }
-    realesrgan.prepare_model(parser)
+    if form_data["model_name"][-1] == "Waifu2x":
+        waifu2x.prepare_model(parser)
+    else:
+        realesrgan.prepare_model(parser)
     magnify_percentage += each_percentage
+    print(magnify_percentage)
 
 
 class MainWindow(QMainWindow):

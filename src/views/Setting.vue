@@ -27,7 +27,12 @@
             </div>
             <div class="blank"></div>
             <div class="buttonDownload">
-              <el-button :icon="Download" circle></el-button>
+              <el-button
+                :icon="Download"
+                :disabled="!options.model[0].children[0].disabled"
+                circle
+                @click="manageModel('download', 'Waifu2x')"
+              ></el-button>
             </div>
             <div class="buttonDelete">
               <el-button
@@ -37,6 +42,7 @@
                 :disabled="options.model[0].children[0].disabled"
                 circle
                 plain
+                @click="manageModel('delete', 'Waifu2x')"
               />
             </div>
           </div>
@@ -60,7 +66,12 @@
             </div>
             <div class="blank"></div>
             <div class="buttonDownload">
-              <el-button :icon="Download" circle></el-button>
+              <el-button
+                :icon="Download"
+                :disabled="!options.model[1].children[0].disabled"
+                circle
+                @click="manageModel('download', 'RealESRGAN_x4plus')"
+              ></el-button>
             </div>
             <div class="buttonDelete">
               <el-button
@@ -70,6 +81,7 @@
                 :disabled="options.model[1].children[0].disabled"
                 circle
                 plain
+                @click="manageModel('delete', 'RealESRGAN_x4plus')"
               />
             </div>
           </div>
@@ -90,7 +102,12 @@
             </div>
             <div class="blank"></div>
             <div class="buttonDownload">
-              <el-button :icon="Download" circle></el-button>
+              <el-button
+                :icon="Download"
+                :disabled="!options.model[1].children[1].disabled"
+                circle
+                @click="manageModel('download', 'RealESRNet_x4plus')"
+              ></el-button>
             </div>
             <div class="buttonDelete">
               <el-button
@@ -100,6 +117,7 @@
                 :disabled="options.model[1].children[1].disabled"
                 circle
                 plain
+                @click="manageModel('delete', 'RealESRNet_x4plus')"
               />
             </div>
           </div>
@@ -120,7 +138,12 @@
             </div>
             <div class="blank"></div>
             <div class="buttonDownload">
-              <el-button :icon="Download" circle></el-button>
+              <el-button
+                :icon="Download"
+                :disabled="!options.model[1].children[2].disabled"
+                circle
+                @click="manageModel('download', 'RealESRGAN_x4plus_anime_6B')"
+              ></el-button>
             </div>
             <div class="buttonDelete">
               <el-button
@@ -130,6 +153,7 @@
                 :disabled="options.model[1].children[2].disabled"
                 circle
                 plain
+                @click="manageModel('delete', 'RealESRGAN_x4plus_anime_6B')"
               />
             </div>
           </div>
@@ -153,7 +177,12 @@
             </div>
             <div class="blank"></div>
             <div class="buttonDownload">
-              <el-button :icon="Download" circle></el-button>
+              <el-button
+                :icon="Download"
+                :disabled="!options.model[2].children[0].disabled"
+                circle
+                @click="manageModel('download', 'Real_CUGAN')"
+              ></el-button>
             </div>
             <div class="buttonDelete">
               <el-button
@@ -163,6 +192,7 @@
                 :disabled="options.model[2].children[0].disabled"
                 circle
                 plain
+                @click="manageModel('delete', 'Real_CUGAN')"
               />
             </div>
           </div>
@@ -175,33 +205,88 @@
 <script setup lang="ts">
 import { Download, Delete, Edit } from "@element-plus/icons-vue";
 import { ref } from "vue";
+import { ElMessage } from "element-plus";
 
 const saveLocation = ref("");
 
 const downloadProcess = ref("");
 const options = ref();
 // 获得当前设置
-const xhrGetSetting = new XMLHttpRequest();
-const urlGetSetting = "http://127.0.0.1:5000/getSetting";
-xhrGetSetting.onreadystatechange = function () {
-  if (xhrGetSetting.readyState == 4 && xhrGetSetting.status == 200) {
-    let responseText = JSON.parse(xhrGetSetting.responseText);
-    options.value = responseText;
-  }
-};
-xhrGetSetting.open("GET", urlGetSetting, false);
-xhrGetSetting.send(null);
-saveLocation.value = options.value.path.downloadUrl;
-const saveLocationFolder = () => {
-  const xhrSaveLocation = new XMLHttpRequest();
-  const urlSaveLocation = "http://127.0.0.1:5000/setSaveLocation";
-  xhrSaveLocation.onreadystatechange = function () {
-    if (xhrSaveLocation.readyState == 4 && xhrSaveLocation.status == 200) {
-      saveLocation.value = xhrSaveLocation.responseText;
+const getState = () => {
+  const xhrGetSetting = new XMLHttpRequest();
+  const urlGetSetting = "http://127.0.0.1:5000/getSetting";
+  xhrGetSetting.onreadystatechange = function () {
+    if (xhrGetSetting.readyState == 4 && xhrGetSetting.status == 200) {
+      let responseText = JSON.parse(xhrGetSetting.responseText);
+      options.value = responseText;
     }
   };
-  xhrSaveLocation.open("GET", urlSaveLocation, false);
-  xhrSaveLocation.send(null);
+  xhrGetSetting.open("GET", urlGetSetting, false);
+  xhrGetSetting.send(null);
+  saveLocation.value = options.value.path.downloadUrl;
+};
+
+getState();
+
+const saveLocationFolder = () => {
+    const xhrSaveLocation = new XMLHttpRequest();
+    const urlSaveLocation = "http://127.0.0.1:5000/setSaveLocation";
+    xhrSaveLocation.onreadystatechange = function () {
+      if (xhrSaveLocation.readyState == 4 && xhrSaveLocation.status == 200) {
+        saveLocation.value = xhrSaveLocation.responseText;
+      }
+    };
+    xhrSaveLocation.open("GET", urlSaveLocation, false);
+    xhrSaveLocation.send(null);
+  };
+  
+// 下载模型
+const manageModel = (manageOperate: String, modelName: String) => {
+  let manageState = "no";
+  let manageField = new FormData();
+  manageField.append("manageOperate", JSON.stringify(manageOperate));
+  manageField.append("modelName", JSON.stringify(modelName));
+  const xhrSendManageField = new XMLHttpRequest();
+  const xhrGetManageResult = new XMLHttpRequest();
+  // 设置请求响应的URL，此处为点击"选好了"按钮时的请求
+  const urlSendManageField = "http://127.0.0.1:5000/manageField";
+  const urlGetManageResult = "http://127.0.0.1:5000/manageResult";
+  xhrSendManageField.open("POST", urlSendManageField, false);
+  xhrSendManageField.send(manageField);
+  xhrGetManageResult.onreadystatechange = function () {
+    //服务器返回值的处理函数，此处使用匿名函数进行实现
+    if (
+      xhrGetManageResult.readyState == 4 &&
+      xhrGetManageResult.status == 200
+    ) {
+      manageState = xhrGetManageResult.responseText;
+      console.log(manageState);
+    }
+  };
+  // 设置定时获取进度
+  let setIntervalTime: NodeJS.Timeout | null = setInterval(function () {
+    xhrGetManageResult.open("GET", urlGetManageResult, false);
+    xhrGetManageResult.send(null);
+    if ("done" == manageState) {
+      clearInterval(Number(setIntervalTime));
+      if (manageOperate == "download") {
+        ElMessage({
+          duration: 2000,
+          showClose: true,
+          message: modelName + " 下载完成",
+          grouping: true,
+        });
+      } else {
+        ElMessage({
+          duration: 2000,
+          showClose: true,
+          message: modelName + " 删除完成",
+          grouping: true,
+        });
+      }
+      getState();
+    }
+  }, 500);
 };
 </script>
 
