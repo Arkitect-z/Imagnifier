@@ -50,3 +50,6 @@ npm run dev
 ```bash
 npm run build
 ```
+## 致谢
+感谢[element-plus-vite-starter](https://github.com/element-plus/element-plus-vite-starter)帮我从0开始学习构建Vue项目
+感谢[Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN)为我提供图像超分辨率的各种技术支持
