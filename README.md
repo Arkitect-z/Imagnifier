@@ -1,4 +1,4 @@
-<img style="align:center" width="160" alt="logo" src="https://user-images.githubusercontent.com/53122135/158972105-8c9f8d81-76ea-4064-8970-b6e58128b1bc.png">
+<div align="center"><img width="160" alt="logo" src="https://user-images.githubusercontent.com/53122135/158972105-8c9f8d81-76ea-4064-8970-b6e58128b1bc.png"></div>
 
 ## <div align="center"><b><a href="README.md">English</a> | <a href="README_CN.md">简体中文</a></b></div>
 
